@@ -25,6 +25,8 @@ app.use(cookieParser());
 app.use(session({
     store: new SQLiteStore({dir:'data'}),
     secret: 'posdb3005a5',
+    resave: false,
+    saveUninitialized: true,
     cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 1 week
   }));
 

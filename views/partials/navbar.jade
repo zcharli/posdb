@@ -1,0 +1,14 @@
+nav.navbar.navbar-fixed-top.navbar-inverse
+  div.container-fluid
+    div.navbar-header
+      a.navbar-brand(href='#',class='goHome') POSDB
+    div#navbar.navbar-collapse.collapse
+      ul.nav.navbar-nav
+        li
+          a(href='#',class='goHome') Home
+        - if(privledge == "Admin")
+          li
+            a(href='#') Management
+      ul.nav.navbar-nav.navbar-right
+        li 
+          a(href='/login') Logout
