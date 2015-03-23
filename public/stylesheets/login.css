@@ -1,0 +1,75 @@
+
+@import url(http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css);
+*{
+  margin: 0;
+  padding: 0;
+}
+html{
+  height: 100%;
+}
+body{
+  &:extend(html);
+  background: radial-gradient(transparent 50%,rgba(0,0,0,.3) 100%),linear-gradient(#D77A6B,#d2c09c 60%,#876d54);
+  font:16px 'Hevetica', sans-serif;
+  color: #8e8171;
+}
+.psevdo{
+  content: '';
+  position: absolute;
+}
+
+
+.login{
+  margin:30px auto;
+  width: 300px;
+  height: 420px;
+  background: #fff;
+  padding: 0 30px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  box-shadow: 0 0 15px rgba(0,0,0,.3);
+  position: relative;
+  overflow: hidden;
+}
+.title{
+  padding-top: 40px;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 18px;
+  color: #8e8171;
+}
+form{
+  margin-top: 30px;
+  height: 255px;
+}
+span{
+  margin-left: 5px;
+}
+div.pass{
+  margin-bottom:40px;
+}
+input{
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #e5d4c2;
+  height: 46px;
+  overflow: hidden;
+  margin-bottom: 20px;
+
+}
+.submit{
+  width: 100px;
+}
+.icon{
+  height: 46px;
+  width: 26px;
+  display: inline-block;
+ 
+  text-align: center;
+i.fa{
+  font-size: 18px;
+  vertical-align: middle;
+  line-height: 44px;
+  color: #dfc5ae;
+}

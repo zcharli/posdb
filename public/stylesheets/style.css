@@ -6,3 +6,90 @@ body {
 a {
   color: #00B7FF;
 }
+.centered {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  /* bring your own prefixes */
+  transform: translate(-50%, -50%);
+}
+.span {
+    float: left;
+    width: 100px;
+    /*background-color: rgba(0,0,0, 0.02);*/
+    height: 100px;
+    vertical-align: middle;
+    border-radius: 1px;
+    margin-right: 100px;
+}
+.span:last-child{
+    margin-right: 0px;
+}
+
+/*loader*/
+.square{
+    width: 20px;
+    height: 20px;
+    border:1px  rgba(58, 79, 95,1) solid;
+    margin: 36px auto;
+    position: relative;
+    -webkit-animation: fill_color 5s linear infinite;
+       -moz-animation: fill_color 5s linear infinite;
+            animation: fill_color 5s linear infinite;
+}
+.square:after{
+    width: 4px;
+    height: 4px;
+    position: absolute;
+    content: "";
+    background-color: rgba(83, 46, 74,1);
+    top: -8px;
+    left: 0px;
+    -webkit-animation: square_check 1s ease-in-out infinite;
+       -moz-animation: square_check 1s ease-in-out infinite;
+            animation: square_check 1s ease-in-out infinite;
+}
+
+@-webkit-keyframes square_check{
+    25%{ left: 22px; top: -8px;}
+    50%{ left: 22px; top: 22px;}
+    75%{ left: -9px; top: 22px;}
+    100%{ left: -9px; top: -7px;}
+}
+@-moz-keyframes square_check{
+    25%{ left: 22px; top: -8px;}
+    50%{ left: 22px; top: 22px;}
+    75%{ left: -9px; top: 22px;}
+    100%{ left: -9px; top: -7px;}
+}
+@keyframes square_check{
+    25%{ left: 22px; top: -8px;}
+    50%{ left: 22px; top: 22px;}
+    75%{ left: -9px; top: 22px;}
+    100%{ left: -9px; top: -7px;}
+}
+@-webkit-keyframes fill_color{
+    0%{ box-shadow: inset 0px 0px 0px 0px rgba(42, 59, 72,0.1);}
+    100%{ box-shadow: inset 0px -20px 0px 0px rgba(42, 59, 72,1);}
+}
+@-moz-keyframes fill_color{
+    0%{ box-shadow: inset 0px 0px 0px 0px rgba(42, 59, 72,0.1);}
+    100%{ box-shadow: inset 0px -20px 0px 0px rgba(42, 59, 72,1);}
+}
+@keyframes fill_color{
+    0%{ box-shadow: inset 0px 0px 0px 0px rgba(42, 59, 72,0.1);}
+    100%{ box-shadow: inset 0px -20px 0px 0px rgba(42, 59, 72,1);}
+}
+
+.roundedBox{
+  margin:30px auto;
+  width: 300px;
+  height: 420px;
+  background: #fff;
+  padding: 0 30px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  box-shadow: 0 0 15px rgba(0,0,0,.3);
+  position: relative;
+  overflow: hidden;
+}
