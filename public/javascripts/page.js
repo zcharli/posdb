@@ -14,6 +14,15 @@ $(function(){
   $(".goHome").click(function(){
     getMainLayout();
   });
+  $(".goProduct").click(function(){
+    getProductLayout();
+  });
+  $(".goUsers").click(function(){
+    getUsersLayout();
+  });
+  $(".goSales").click(function(){
+    getSalesLayout();
+  });
 
   var ajaxPost = function(url,successcb,completecb,errorcb){
     $.ajax({
@@ -27,17 +36,45 @@ $(function(){
 
   var mainContainer = $('.mainContainer');
   var loadingSpinner = function(){  
-    //mainContainer.addClass("radialBackground");
-    mainContainer.append('<div class="span centered"><div class="square"></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Loading...</div>');
+    mainContainer.append('<div class="centered">&nbsp;&nbsp<i class="spin extra-large"></i><br>Loading...</div>');
   }
-  loadingSpinner(); //first load
+
+  var getProductLayout = function() {
+    mainContainer.empty();
+    loadingSpinner();
+    $.get("/goproduct",function(data){
+      mainContainer.empty();
+      mainContainer.append(data);
+    });
+  }
+
+  var getSalesLayout = function() {
+    mainContainer.empty();
+    loadingSpinner();
+    $.get("/gosales",function(data){
+      mainContainer.empty();
+      mainContainer.append(data);
+    });
+  }
+
+  var getUsersLayout = function() {
+    mainContainer.empty();
+    loadingSpinner();
+    $.get("/gousers",function(data){
+      mainContainer.empty();
+      mainContainer.append(data);
+    });
+  }
 
   var getMainLayout = function() {
+    mainContainer.empty();
+    loadingSpinner();
     $.get("/main",function(data){
       mainContainer.empty();
       mainContainer.append(data);
     });
   }
+  loadingSpinner();
   getMainLayout();
 
 

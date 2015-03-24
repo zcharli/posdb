@@ -1,30 +1,25 @@
 div.row
-  div.col-md-4.roundedBox
-    div.panelBG
-      p something
+  div.no-gutter.col-md-4
+    div.row.roundedBox.shoppingList
+      div
+        p something
+    div.row.roundedBox.priceTab
+        p else
+
   div.col-md-8
     div.row
-      div.col-xs-1.col-sm-1
-        p 1
-      div.col-xs-1.col-sm-1
-        p 2
-      div.col-xs-1.col-sm-1
-        p 3
-      div.col-xs-1.col-sm-1
-        p 4
-      div.col-xs-1.col-sm-1
-        p 5
-      div.col-xs-1.col-sm-1
-        p 6
-      div.col-xs-1.col-sm-1
-        p 7
-      div.col-xs-1.col-sm-1
-        p 8
-      div.col-xs-1.col-sm-1
-        p 9
-      div.col-xs-1.col-sm-1
-        p 10
-      div.col-xs-1.col-sm-1
-        p 11
-      div.col-xs-1.col-sm-1
-        p 12
+      div.searchDiv
+        input.search(type="search",placeholder="Search for any product name")
+    div.row.productResult
+      div.col-xs-2.col-sm-2.no-gutter
+        button.resultButton 1
+      div.col-xs-2.col-sm-2.no-gutter
+        button.resultButton 2
+      div.col-xs-2.col-sm-2.no-gutter
+        button.resultButton 3
+      div.col-xs-2.col-sm-2.no-gutter
+        button.resultButton 4
+      div.col-xs-2.col-sm-2.no-gutter
+        button.resultButton 5
+      div.col-xs-2.col-sm-2.no-gutter
+        button.resultButton 6

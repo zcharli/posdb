@@ -6,9 +6,13 @@ nav.navbar.navbar-fixed-top.navbar-inverse
       ul.nav.navbar-nav
         li
           a(href='#',class='goHome') Home
-        - if(privledge == "Admin")
-          li
-            a(href='#') Management
+        li
+          a(href='#',class='goProduct') Product
       ul.nav.navbar-nav.navbar-right
+        - if(privledge == "Admin" || privledge == "Manager")
+          li
+            a(href='#',class='goUsers') Manage Users
+          li
+            a(href='#',class='goSales') Sales
         li 
           a(href='/login') Logout

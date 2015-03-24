@@ -26,7 +26,33 @@ router.get('/main', function(req, res, next) {
   }else{
     res.render('login', { title: 'Express' });
   }
+});
 
+router.get('/goproduct', function(req, res, next) {
+  var username = req.session.username;
+  if(username){
+    res.render('partials/product');
+  }else{
+    res.render('login', { title: 'Express' });
+  }
+});
+
+router.get('/gousers', function(req, res, next) {
+  var username = req.session.username;
+  if(username){
+    res.render('partials/users');
+  }else{
+    res.render('login', { title: 'Express' });
+  }
+});
+
+router.get('/gosales', function(req, res, next) {
+  var username = req.session.username;
+  if(username){
+    res.render('partials/sales');
+  }else{
+    res.render('login', { title: 'Express' });
+  }
 });
 
 router.get('/login', function(req, res, next) {
