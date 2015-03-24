@@ -8,6 +8,9 @@ nav.navbar.navbar-fixed-top.navbar-inverse
           a(href='#',class='goHome') Home
         li
           a(href='#',class='goProduct') Product
+      p.navbar-text.navbar-right 
+        | Signed in as 
+        a#goUserInfo(href='#') #{user}
       ul.nav.navbar-nav.navbar-right
         - if(privledge == "Admin" || privledge == "Manager")
           li
