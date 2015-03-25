@@ -58,7 +58,7 @@ router.get('/gosales', function(req, res, next) {
 router.get('/login', function(req, res, next) {
   req.session.username = undefined;
   req.session.privledge = undefined;
-  res.render('login', { user: username });
+  res.render('login');
 });
 
 router.post('/signin', function(req, res, next) {
