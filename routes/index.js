@@ -76,6 +76,7 @@ router.get('/login', function(req, res, next) {
   req.session.username = undefined;
   req.session.privledge = undefined;
   res.render('login');
+<<<<<<< HEAD
 });
 
 router.get('/getCategories', function(req, res, next) {
@@ -99,6 +100,8 @@ router.get('/getCategories', function(req, res, next) {
   }else{
     res.redirect('login');
   }
+=======
+>>>>>>> 8fd463961012fec1f3549bf634b7db30fda64d80
 });
 
 router.post('/signin', function(req, res, next) {
