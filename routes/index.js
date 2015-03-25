@@ -2,7 +2,24 @@ var express = require('express');
 var router = express.Router();
 var sqlite3 = require('sqlite3').verbose();
 
-//var db = new sqlite3.Database('data/posdb');
+var db = new sqlite3.Database('data/posdb');
+
+var getAllQuery = function(sql) {
+  var rows = [];
+  db.serialize(function(){
+    db.each(sql,function(err,row){
+      var r = [];
+      for(var i in row) {
+        r.push(row[i]);
+      }
+      rows.push(r);
+    },function(){
+      //callback function when all rows are done
+      console.log(rows);
+      return rows;
+    })
+  });
+}
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -58,7 +75,30 @@ router.get('/gosales', function(req, res, next) {
 router.get('/login', function(req, res, next) {
   req.session.username = undefined;
   req.session.privledge = undefined;
-  res.render('login', { user: username });
+  res.render('login');
+});
+
+router.get('/getCategories', function(req, res, next) {
+  var username = req.session.username;
+  var priv = req.session.privledge;
+  if(username && (priv == "Admin" || priv == "Manager")){
+    var rows = [];
+    db.serialize(function(){
+      db.each("SELECT * FROM CATEGORY",function(err,row){
+        var r = [];
+        for(var i in row) {
+          r.push(row[i]);
+        }
+        rows.push(r);
+      },function(){
+        //callback function when all rows are done
+        
+        res.json();
+      })
+    });
+  }else{
+    res.redirect('login');
+  }
 });
 
 router.post('/signin', function(req, res, next) {

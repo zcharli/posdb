@@ -4,7 +4,6 @@ $(function(){
     'overflow': 'hidden',
     'height': '100%'
   });
-
   //set nav bar active
   $('.nav li').click(function(){
     //console.log("yes");
@@ -24,9 +23,11 @@ $(function(){
     getSalesLayout();
   });
 
-  var ajaxPost = function(url,successcb,completecb,errorcb){
+  var ajaxPost = function(url,data,successcb,completecb,errorcb){
     $.ajax({
       type: "POST",
+      url: url,
+      data: data,
       dataType: "json",
       complete: completecb,
       success: successcb,
@@ -75,7 +76,7 @@ $(function(){
     });
   }
   loadingSpinner();
-  getMainLayout();
-
+  //getMainLayout();
+  getProductLayout();
 
 });
