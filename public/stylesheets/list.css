@@ -1,5 +1,6 @@
-
+/*@import url(http://fonts.googleapis.com/css?family=Merriweather+Sans);*/
 ol {
+  /*font: 14px 'Merriweather Sans', 'lucida sans', sans-serif;*/
   counter-reset: li;
   list-style: none;
   *list-style: decimal; /* Keep using default numbering for IE6/7 */
@@ -21,7 +22,7 @@ ol ol {
   color: #444;
     text-decoration: none;
   border-radius: .3em;
-    transition: all .5s ease-out; 
+    transition: all 0 ease-out; 
 }
 .rounded-list div:hover{
   background: #eee;

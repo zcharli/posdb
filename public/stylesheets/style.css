@@ -1,5 +1,8 @@
-body {
+/*@import url(http://fonts.googleapis.com/css?family=Merriweather+Sans);
+*/body {
+
   padding: 50px;
+  /*font: 15px 'Merriweather Sans', 'lucida sans', sans-serif;*/
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   background: radial-gradient(transparent 50%,rgba(0,0,0,.3) 100%),linear-gradient(#D77A6B,#d2c09c 60%,#876d54);
   
