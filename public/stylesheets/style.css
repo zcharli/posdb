@@ -1,5 +1,6 @@
 /*@import url(http://fonts.googleapis.com/css?family=Merriweather+Sans);
-*/body {
+*/
+body {
 
   padding: 50px;
   /*font: 15px 'Merriweather Sans', 'lucida sans', sans-serif;*/
@@ -218,7 +219,8 @@ a {
   border-radius: 5px;
   box-shadow: 0 0 15px rgba(0,0,0,.3);
   position: relative;
-  overflow: hidden;
+  overflow: auto;
+  overflow-x:hidden;
 }
 
 .shoppingList{

@@ -81,19 +81,30 @@ router.get('/login', function(req, res, next) {
 router.get('/getCategories', function(req, res, next) {
   var username = req.session.username;
   var priv = req.session.privledge;
+  var rows = [];
   if(username && (priv == "Admin" || priv == "Manager")){
-    var rows = [];
+    
     db.serialize(function(){
-      db.each("SELECT * FROM CATEGORY",function(err,row){
+      db.each("SELECT * FROM CATEGORY ORDER BY PARENT_CATEGORY_ID asc",function(err,row){
         var r = [];
-        for(var i in row) {
-          r.push(row[i]);
-        }
+        for(var i in row) {r.push(row[i]);}
         rows.push(r);
       },function(){
-        //callback function when all rows are done
-        
-        res.json();
+        //callback function when all rows are 
+        //console.log(rows);
+        var heirarchy = {};
+        for(var i=0;i<rows.length;++i){
+          if(rows[i][1] == 0){
+            //.log(rows[i][0]);
+            heirarchy[rows[i][0]] = [];
+            heirarchy[rows[i][0]].push(rows[i]);
+          }else{
+            heirarchy[rows[i][1]].push(rows[i]);
+          }
+         // console.log(heirarchy);
+        }
+        console.log(heirarchy);
+        res.render('partials/category',{rows:heirarchy});
       })
     });
   }else{

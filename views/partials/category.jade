@@ -1,0 +1,13 @@
+script(type='text/javascript' src='javascripts/category.js')
+h4 Categories
+hr
+ol.rounded-list
+  - for(var i in rows)
+    - if (rows[i][0][1] == 0)
+        li.level-1.selectable
+          div.level= rows[i][0][2]
+          - if(rows[i].length > 1)
+          ol.level-2.selectable
+            - for(var j=1;j<rows[i].length;++j)
+                li
+                  div.level= rows[i][j][2]
