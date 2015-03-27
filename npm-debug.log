@@ -1,0 +1,85 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/bin/node', '/usr/bin/npm', 'install', 'connect-sql' ]
+2 info using npm@1.4.28
+3 info using node@v0.10.37
+4 verbose node symlink /usr/bin/node
+5 verbose readDependencies using package.json deps
+6 verbose cache add [ 'connect-sql', null ]
+7 verbose cache add name=undefined spec="connect-sql" args=["connect-sql",null]
+8 verbose parsed url { protocol: null,
+8 verbose parsed url   slashes: null,
+8 verbose parsed url   auth: null,
+8 verbose parsed url   host: null,
+8 verbose parsed url   port: null,
+8 verbose parsed url   hostname: null,
+8 verbose parsed url   hash: null,
+8 verbose parsed url   search: null,
+8 verbose parsed url   query: null,
+8 verbose parsed url   pathname: 'connect-sql',
+8 verbose parsed url   path: 'connect-sql',
+8 verbose parsed url   href: 'connect-sql' }
+9 silly lockFile 356398e7-connect-sql connect-sql
+10 verbose lock connect-sql /home/czl/.npm/356398e7-connect-sql.lock
+11 silly lockFile 356398e7-connect-sql connect-sql
+12 silly lockFile 356398e7-connect-sql connect-sql
+13 verbose addNamed [ 'connect-sql', '' ]
+14 verbose addNamed [ null, '*' ]
+15 silly lockFile e24cfb00-connect-sql connect-sql@
+16 verbose lock connect-sql@ /home/czl/.npm/e24cfb00-connect-sql.lock
+17 silly addNameRange { name: 'connect-sql', range: '*', hasData: false }
+18 verbose request where is /connect-sql
+19 verbose request registry https://registry.npmjs.org/
+20 verbose request id ff2553c95e3e48a8
+21 verbose url raw /connect-sql
+22 verbose url resolving [ 'https://registry.npmjs.org/', './connect-sql' ]
+23 verbose url resolved https://registry.npmjs.org/connect-sql
+24 verbose request where is https://registry.npmjs.org/connect-sql
+25 info trying registry request attempt 1 at 00:02:33
+26 http GET https://registry.npmjs.org/connect-sql
+27 http 404 https://registry.npmjs.org/connect-sql
+28 verbose headers { date: 'Thu, 26 Mar 2015 04:02:33 GMT',
+28 verbose headers   server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+28 verbose headers   'content-type': 'application/json',
+28 verbose headers   'cache-control': 'max-age=0',
+28 verbose headers   'content-length': '51',
+28 verbose headers   'accept-ranges': 'bytes',
+28 verbose headers   via: '1.1 varnish',
+28 verbose headers   age: '0',
+28 verbose headers   'x-served-by': 'cache-jfk1033-JFK',
+28 verbose headers   'x-cache': 'MISS',
+28 verbose headers   'x-cache-hits': '0',
+28 verbose headers   'x-timer': 'S1427342553.541545,VS0,VE357',
+28 verbose headers   'keep-alive': 'timeout=10, max=50',
+28 verbose headers   connection: 'Keep-Alive' }
+29 silly registry.get cb [ 404,
+29 silly registry.get   { date: 'Thu, 26 Mar 2015 04:02:33 GMT',
+29 silly registry.get     server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+29 silly registry.get     'content-type': 'application/json',
+29 silly registry.get     'cache-control': 'max-age=0',
+29 silly registry.get     'content-length': '51',
+29 silly registry.get     'accept-ranges': 'bytes',
+29 silly registry.get     via: '1.1 varnish',
+29 silly registry.get     age: '0',
+29 silly registry.get     'x-served-by': 'cache-jfk1033-JFK',
+29 silly registry.get     'x-cache': 'MISS',
+29 silly registry.get     'x-cache-hits': '0',
+29 silly registry.get     'x-timer': 'S1427342553.541545,VS0,VE357',
+29 silly registry.get     'keep-alive': 'timeout=10, max=50',
+29 silly registry.get     connection: 'Keep-Alive' } ]
+30 silly lockFile e24cfb00-connect-sql connect-sql@
+31 silly lockFile e24cfb00-connect-sql connect-sql@
+32 error 404 404 Not Found: connect-sql
+32 error 404
+32 error 404 'connect-sql' is not in the npm registry.
+32 error 404 You should bug the author to publish it
+32 error 404 It was specified as a dependency of 'POSDB'
+32 error 404
+32 error 404 Note that you can also install from a
+32 error 404 tarball, folder, or http url, or git url.
+33 error System Linux 3.13.0-46-generic
+34 error command "/usr/bin/node" "/usr/bin/npm" "install" "connect-sql"
+35 error cwd /home/czl/Documents/COMP3005/posdb
+36 error node -v v0.10.37
+37 error npm -v 1.4.28
+38 error code E404
+39 verbose exit [ 1, true ]

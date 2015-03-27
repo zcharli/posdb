@@ -78,6 +78,36 @@ router.get('/login', function(req, res, next) {
   res.render('login');
 });
 
+router.get('/getProducts',function(req,res,next){
+  var username = req.session.username;
+  var priv = req.session.privledge;
+  var rows = [];
+  if(username && (priv == "Admin" || priv == "Manager")){
+    
+    db.serialize(function(){
+      db.each("SELECT PRODUCT_ID,PRODUCT_BARCODE_SKU, PRODUCT_NAME, CATEGORY_NAME, PRICE"
+        + " P.CATEGORY_ID FROM PRODUCTS P JOIN CATEGORY C ON"
+        + " P.CATEGORY_ID=C.CATEGORY_ID WHERE DATE_DISCONTINUED IS NULL"
+        + " ORDER BY PRODUCT_NAME ASC",function(err,row){
+        var r = [];
+        var price = 0;
+        for(var i in row) {
+          if(price == 5) //price is the 5th column
+            row[i] = row[i]/100;
+          r.push(row[i]);
+          ++price;
+        }
+        rows.push(r);
+      },function(){
+        //callback function when all rows are 
+        res.render('partials/product_table',{rows:rows});
+      })
+    });
+  }else{
+    res.redirect('login');
+  }
+});
+
 router.get('/getCategories', function(req, res, next) {
   var username = req.session.username;
   var priv = req.session.privledge;
@@ -91,19 +121,15 @@ router.get('/getCategories', function(req, res, next) {
         rows.push(r);
       },function(){
         //callback function when all rows are 
-        //console.log(rows);
         var heirarchy = {};
         for(var i=0;i<rows.length;++i){
           if(rows[i][1] == 0){
-            //.log(rows[i][0]);
             heirarchy[rows[i][0]] = [];
             heirarchy[rows[i][0]].push(rows[i]);
           }else{
             heirarchy[rows[i][1]].push(rows[i]);
           }
-         // console.log(heirarchy);
         }
-        console.log(heirarchy);
         res.render('partials/category',{rows:heirarchy});
       })
     });
