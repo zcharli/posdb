@@ -2,7 +2,45 @@ script(type='text/javascript' src='javascripts/product.js')
 link(rel='stylesheet', href='/stylesheets/list.css')
 div.row
   div.no-guter.col-md-4
-    div.roundedBox.vh87.padme.pnlCat.scrollable
-     
+    div.roundedBoxNoPos.vh87.padme.pnlCat.scrollable
   div.no-guter.col-md-8
-    div.roundedBox.vh87.padme.pnlProd.scrollable
+    div.roundedBoxNoPos.vh87.padme.scrollable 
+      h4.float-left Products
+      div
+        button.addProductBtn.btn.btn-success.float-right(data-target='#updateModal', data-toggle='modal',
+          data-direction="bottom") Add Product
+        button.addProductCat.btn.btn-success.float-right(data-target='#updateCategory',style='margin-right:10px;', 
+          data-toggle='modal', data-direction="bottom") Add Category
+      div.clear
+      hr
+      div.pnlProd
+div.product-modal
+  div(id='updateModal', class='modal fade', role='dialog', aria-hidden='true',
+  aria-labelledby="updateModalLabel")
+    div(class='modal-dialog updateModal')
+      div(class='modal-content')
+        div(class='modal-header')
+          button(type='button', class='btn btn-primary float-right', 
+            data-dismiss="modal") Close
+          button(type='button', class='btn btn-success float-right',
+            style='margin-right:10px;' id='btnUpdate') Update/Add
+            span(class='glyphicon glyphicon-floppy-save', style='padding-left:15px') 
+          button(type='button', class='btn btn-danger float-right',
+            style='margin-right:10px;', id='btnDelete') Delete
+          h4.float-left Manage Products
+          div.clear
+        div(class='modal-body')
+          form(name="update", action="/update", method="post")
+            div(class='form-group')
+              label(for='p_sku',class='control-label') SKU
+              input(type="text",class="form-control",id='p_sku')
+              label(for='cat_name',class='control-label') Category
+              select.form-control#cat_name(name="cat_name")
+                
+              label(for='p_name',class='control-label') Details
+              input(type="text",class="form-control",id='p_name')
+              label(for='p_price',class='control-label') Price
+              input(type="text",class="form-control",id='p_price')
+              input(type="hidden", id='product_id')
+        div(class='modal-footer')
+          

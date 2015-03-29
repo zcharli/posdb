@@ -29,4 +29,7 @@ $(function(){
       pnlProd.empty();
       pnlProd.append(data);
   });
+  $.get("/getCategories/1",function(data){
+      $("#cat_name").append(data);
+  });
 });

@@ -8,6 +8,11 @@ $(function(){
         //add search query to 
       },
       selecting: function (event, ui) {
+        if ($('.ui-selecting').length > 1) {
+            // if selecting multiple (lasso) we will ignore the selection and fallback
+            $('.ui-selecting').removeClass('ui-selecting');
+            $(lastSelection).addClass('ui-selecting');// if no value, nothing will be selected
+        }  
         if ($(ui.selecting).parent().hasClass('level-1')) {
           //this is a level-1 item, so select all of it's children
           var ch = $(ui.selecting).parent().find('.level-2 .ui-selectee');

@@ -1,0 +1,5 @@
+- for(var i in rows)
+  option(value=rows[i][0][0]) #{rows[i][0][2]}
+  - if(rows[i].length > 1)
+    - for(var j=1;j<rows[i].length;++j)
+        option(value=rows[i][j][0]) --- #{rows[i][j][2]}

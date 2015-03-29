@@ -108,10 +108,11 @@ router.get('/getProducts',function(req,res,next){
   }
 });
 
-router.get('/getCategories', function(req, res, next) {
+router.get('/getCategories/:page?', function(req, res, next) {
   var username = req.session.username;
   var priv = req.session.privledge;
   var rows = [];
+  var option = req.params.page;
   if(username && (priv == "Admin" || priv == "Manager")){
     
     db.serialize(function(){
@@ -130,13 +131,18 @@ router.get('/getCategories', function(req, res, next) {
             heirarchy[rows[i][1]].push(rows[i]);
           }
         }
-        res.render('partials/category',{rows:heirarchy});
+        if(option){
+          res.render('partials/category_options',{rows:heirarchy});
+        }else{
+          res.render('partials/category',{rows:heirarchy});
+        }
       })
     });
   }else{
     res.redirect('login');
   }
 });
+
 
 router.post('/signin', function(req, res, next) {
   var username = req.body.username;

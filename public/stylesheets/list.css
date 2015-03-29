@@ -8,6 +8,7 @@ ol {
   text-shadow: 0 1px 0 rgba(255,255,255,.5);
   width: 300px;
   margin: 0 auto;
+  cursor: pointer;
 }
 ol ol {
   margin-left: 2em;
@@ -18,11 +19,11 @@ ol ol {
   padding: .4em .4em .4em 2em;
   *padding: .4em;
   margin: .5em 0;
-    background: #ddd;
+  background: #ddd;
   color: #444;
-    text-decoration: none;
+  text-decoration: none;
   border-radius: .3em;
-    transition: all 0 ease-out; 
+  transition: all 0 ease-out; 
 }
 .rounded-list div:hover{
   background: #eee;

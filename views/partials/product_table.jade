@@ -19,34 +19,3 @@ table#tblProducts.table.table-hover.table-bordered
         td=rows[i][2]
         td=rows[i][3]
         rd=rows[i][4]
-div(id='updateModal', class='modal', role='dialog', aria-hidden='true',
-  aria-labelledby="updateModalLabel")
-    div(class='modal-dialog')
-      div(class='modal-content')
-        div(class='modal-header')
-          button(type='button', class='close', data-dismiss='modal',
-          aria-label='Close')
-            span(aria-hidden='true') x 
-          h4 Manage Products
-        div(class='modal-body')
-          form(name="update", action="/update", method="post")
-            div(class='form-group')
-              //- div(id='savealert' class='alert alert-success alert-dismissible hide fadein', 
-              //-   role='alert')
-              //-   button(type='button', class='close', data-dismiss='alert', aria-hidden='true') x
-              //-   p Sucessful save, click OK to reload.
-              label(for='song_name',class='control-label') Title
-              input(type="text",class="form-control",id='song_name')
-              label(for='book_name',class='control-label') Book
-              input(type="text",class="form-control",id='book_name')
-              label(for='page_num',class='control-label') Page
-              input(type="text",class="form-control",id='page_num')
-              label(for='song_id',class='control-label') ID
-              input(type="text",class="form-control", id='song_id')
-              input(type="hidden", id='idx')
-        div(class='modal-footer')
-          button(type='button', class='btn btn-primary', data-dismiss="modal") Close
-          button(type='button', class='btn btn-success', id='btnUpdate') Update
-            span(class='glyphicon glyphicon-floppy-save' style='padding-left:15px') 
-          button(type='button', class='btn btn-danger', id='btnDelete') Delete
-//- /http://coolestguidesontheplanet.com/bootstrap/modal.php
