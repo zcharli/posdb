@@ -108,6 +108,40 @@ router.get('/getProducts',function(req,res,next){
   }
 });
 
+router.post('/update',function(req,res,next){
+  var username = req.session.username;
+  var priv = req.session.privledge;
+  var data = req.body; //id, name,price,category_id,sku
+  //console.log(data);
+  if(username && (priv == "Admin" || priv == "Manager")){
+    db.serialize(function(){
+      if(data.id == ''){
+        var stmt = db.prepare("INSERT INTO PRODUCT (PRODUCT_BARCODE_SKU, "+
+        "CATEGORY_ID,PRODUCT_NAME,PRICE) VALUES ($sku,$cat,$name,$price)");
+        var param = {$sku:data.sku,$cat:data.category_id,$name:data.name,
+                     $price:data.price*100};
+      }else{
+        var stmt = db.prepare("UPDATE PRODUCT SET PRODUCT_BARCODE_SKU=$sku "+
+        "CATEGORY_ID=$cat,PRODUCT_NAME=$name,PRICE=$price WHERE PRODUCT_ID=$id");
+        var param = {$sku:data.sku,$cat:data.category_id,$name:data.name,
+                     $price:data.price*100,$id:data.id};
+      }
+
+      stmt.run(param,function(err){
+        if(err){
+          console.log(err);
+        }else{
+          res.json({'data':'successful'});
+          console.log(this);
+        }
+      });
+      stmt.finalize();
+      });
+  }else{
+    res.redirect('login');
+  }
+});
+
 router.get('/getCategories/:page?', function(req, res, next) {
   var username = req.session.username;
   var priv = req.session.privledge;

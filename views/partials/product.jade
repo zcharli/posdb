@@ -19,7 +19,7 @@ div.product-modal
   aria-labelledby="updateModalLabel")
     div(class='modal-dialog updateModal')
       div(class='modal-content')
-        form(name="update", action="/update", method="post", 
+        form(name="update", method="post", 
           data-toggle="validator", id="p_form")
           div(class='modal-header')
             button(type='button', class='btn btn-primary float-right', 
@@ -39,15 +39,15 @@ div.product-modal
               //- span.help-block.with-errors Max 44 characters numbers and underscores 
             div(class='form-group')
               label(for='cat_name',class='control-label') Category
-              select.form-control.selectpicker(name="cat_name", id='cat_name', required)
-                option(value='0') Select a category
+              select.form-control.selectpicker(name="cat_name", id='cat_name',placeholder='Select a category', required)
+                option
             div(class='form-group')
               label(for='p_name',class='control-label') Details
               input(type="text",class="form-control",id='p_name', maxlength='44',required)
               //- span.help-block.with-errors Max 44 characters numbers and underscores 
             div(class='form-group')
               label(for='p_price',class='control-label',data-error="Need to give product a price") Price
-              input(type="number",class="form-control",id='p_price',required)
+              input(type="number",step="any",class="form-control",id='p_price',required)
               input(type="hidden", id='product_id')
         div(class='modal-footer')
           
