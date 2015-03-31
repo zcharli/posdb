@@ -28,7 +28,7 @@ div.product-modal
               style='margin-right:10px;' id='btnUpdate') Update/Add
               span(class='glyphicon glyphicon-floppy-save', style='padding-left:15px') 
             button(type='button', class='btn btn-danger float-right',
-              style='margin-right:10px;', id='btnDelete') Delete
+              style='margin-right:10px;', id='btnDeleteProd',disabled) Delete
             h4.float-left Manage Products
             div.clear
           div(class='modal-body')
@@ -48,6 +48,33 @@ div.product-modal
             div(class='form-group')
               label(for='p_price',class='control-label',data-error="Need to give product a price") Price
               input(type="number",step="any",class="form-control",id='p_price',required)
-              input(type="hidden", id='product_id')
+              input(type="hidden", id='prod_id')
         div(class='modal-footer')
-          
+div.product-modal
+  div(id='updateCategory', class='modal fade', role='dialog', aria-hidden='true',
+  aria-labelledby="updateCategoryLabel")
+    div(class='modal-dialog updateModal')
+      div(class='modal-content')
+        form(name="cat_form", method="post", 
+          data-toggle="validator", id="cat_form")
+          div(class='modal-header')
+            button(type='button', class='btn btn-primary float-right', 
+              data-dismiss="modal") Close
+            button(type='submit', class='btn btn-success float-right',
+              style='margin-right:10px;' id='btnUpdate') Update/Add
+              span(class='glyphicon glyphicon-floppy-save', style='padding-left:15px') 
+            button(type='button', class='btn btn-danger float-right',
+              style='margin-right:10px;', id='btnDeleteCat') Delete
+            h4.float-left Manage Categories
+            div.clear
+          div(class='modal-body')
+            div(class='form-group')
+              label(for='cat_detail',class='control-label') Category Name
+              input(type="text",class="form-control",data-error="Max length is 44, please fill in this field",
+                id='cat_detail', maxlength='44',required)
+            div(class='form-group')
+              label(for='cat_parent',class='control-label') Parent Catgeory
+              select.form-control.selectpicker(name="cat_parent", id='cat_parent',placeholder='Select a category')
+                option(value='0') No Parent
+              input(type="hidden", id='cat_id')
+        div(class='modal-footer')

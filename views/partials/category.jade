@@ -4,10 +4,15 @@ hr
 ol.rounded-list
   - for(var i in rows)
     - if (rows[i][0][1] == 0)
-        li.level-1.selectable
-          div.level= rows[i][0][2]
+        li.level-1
+          div.level.cat_row(data-id=rows[i][0][0],
+            data-target="#updateCategory",data-toggle='modal',
+            data-direction="bottom",data-name=rows[i][0][2],
+            data-parent=rows[i][0][1])= rows[i][0][2]
           - if(rows[i].length > 1)
-          ol.level-2.selectable
+          ol.level-2
             - for(var j=1;j<rows[i].length;++j)
                 li
-                  div.level= rows[i][j][2]
+                  div.cat_row.level(data-id=rows[i][j][0],data-target="#updateCategory",
+                    data-toggle='modal',data-direction="bottom", 
+                    data-name=rows[i][j][2],data-parent=rows[i][j][1])= rows[i][j][2]

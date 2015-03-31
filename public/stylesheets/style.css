@@ -330,3 +330,7 @@ a {
 .updateModal.modal-dialog  {
   width:100%;
 }
+#updateCategory{
+  overflow: hidden;
+  top:50%;
+}

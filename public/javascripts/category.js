@@ -1,49 +1,51 @@
-$(function(){
-  var catSelection = [];
-    $('.rounded-list').bind( "mousedown", function ( e ) {
-      e.metaKey = true;
-    }).selectable({
-      filter: 'li div',
-      selected: function(event,ui){
-        //add search query to 
-      },
-      selecting: function (event, ui) {
-        if ($('.ui-selecting').length > 1) {
-            // if selecting multiple (lasso) we will ignore the selection and fallback
-            $('.ui-selecting').removeClass('ui-selecting');
-            $(lastSelection).addClass('ui-selecting');// if no value, nothing will be selected
-        }  
-        if ($(ui.selecting).parent().hasClass('level-1')) {
-          //this is a level-1 item, so select all of it's children
-          var ch = $(ui.selecting).parent().find('.level-2 .ui-selectee');
-          $(ch).not(".ui-selected").addClass("ui-selecting");
-        } else {
-          //this is a level-2 item, so check to see if all of it's siblings are also selected
-          var sibs = $(ui.selecting).parent().siblings().find('.ui-selectee');
-          var notSelected = 0;
-          for (var i = 0; i < sibs.length; i++) {
-              if ($(sibs[i]).hasClass('ui-selected') || $(sibs[i]).hasClass('ui-selecting')) {
-                  notSelected = notSelected;
-              } else {
-                  notSelected = notSelected + 1;
-              }
+$(document).ready(function () {
+  $('#cat_form').validator().on('submit', function(e) {
+    if(e.isDefaultPrevented())  {
+      //alert("The form is not completed correctly");
+    } else {
+      e.preventDefault();
+      $.ajax({
+        type: 'POST',
+        url: '/update_cat',
+        data: {'id': $('#cat_id').val(),
+               'name': $('#cat_detail').val(),
+               'parent': $('#cat_parent').val()},
+        success: function(res) {
+          console.log(res);
+          if (res['data'] == 'successful') {
+            alert("Add was successful, you may continue adding");
+            $('#cat_id').val("");
+            $('#cat_detail').val("");
+            $.get("/getCategories",function(data){
+              $('.pnlCat').empty();
+              $('.pnlCat').append(data);
+            });
           }
-          if (notSelected === 0) { //all siblings are selected, so select their level-1 parent as well
-              $(ui.selecting).parent().parent().parent().find('>:first-child').not(".ui-selected").addClass("ui-selecting");
-          }
-          //otherwise, just select as usual
+          else {
+            alert("Something terrible happened while saving");
+          } 
         }
-      },
-      unselected: function (event, ui) {
-        if ($(ui.unselected).parent().hasClass('level-1')) {
-          //unselect all of it's children
-          $(ui.unselected).parent().children().each(function () {
-              $(this).find('.ui-selectee').removeClass('ui-selected').addClass('ui-unselected');
-          });
-        } else {
-          //this is a level-2 item, so we need to deselect its level-1 parent
-          $(ui.unselected).parents('li.level-1').find(">:first-child").removeClass('ui-selected');
-        }
-      }
+      });
+    }
+  });
+  $(function(){
+    $(".cat_row").click(function(e){
+      e.preventDefault();
+      $('#updateCategory')
+          .prop('class', 'modal fade') // revert to default
+          .addClass( $(this).data('direction') );
+      $('#updateCategory').modal({
+      keyboard: true,
+      show:false
+      }).on('shown.bs.modal',function(e){ 
+        $('#btnDeleteCat').removeAttr('disabled','disabled');
+        var row = $(e.relatedTarget).data();
+        if(row){//on update, else its on insert
+          $('#cat_detail').val(row['name']);
+          $('#cat_parent').val(row['parent']);
+          $('#cat_id').val(row['id']);
+        };
+      });
+    });
   });
 });

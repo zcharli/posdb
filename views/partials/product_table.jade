@@ -14,8 +14,9 @@ table#tblProducts.table.table-hover.table-bordered
     - for(var i=0; i <rows.length;++i)
       tr(id=rows[i][0],class="product_row",data-toggle="modal",
         data-id=rows[i][0],data-sku=rows[i][1],data-name=rows[i][2],
-        data-catname=rows[i][4],data-catid=rows[i][5],data-target="#updateModal")
+        data-catname=rows[i][3],data-catid=rows[i][5],
+        data-price=rows[i][4],data-target="#updateModal")
         td=rows[i][1]
         td=rows[i][2]
         td=rows[i][3]
-        rd=rows[i][4]
+        td=rows[i][4]

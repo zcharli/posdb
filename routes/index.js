@@ -4,23 +4,6 @@ var sqlite3 = require('sqlite3').verbose();
 
 var db = new sqlite3.Database('data/posdb');
 
-var getAllQuery = function(sql) {
-  var rows = [];
-  db.serialize(function(){
-    db.each(sql,function(err,row){
-      var r = [];
-      for(var i in row) {
-        r.push(row[i]);
-      }
-      rows.push(r);
-    },function(){
-      //callback function when all rows are done
-      console.log(rows);
-      return rows;
-    })
-  });
-}
-
 /* GET home page. */
 router.get('/', function(req, res, next) {
   var username = req.session.username;
@@ -85,20 +68,26 @@ router.get('/getProducts',function(req,res,next){
   if(username && (priv == "Admin" || priv == "Manager")){
     
     db.serialize(function(){
-      db.each("SELECT PRODUCT_ID,PRODUCT_BARCODE_SKU, PRODUCT_NAME, CATEGORY_NAME, PRICE"
-        + " P.CATEGORY_ID FROM PRODUCTS P JOIN CATEGORY C ON"
+      db.each("SELECT PRODUCT_ID,PRODUCT_BARCODE_SKU, PRODUCT_NAME, CATEGORY_NAME, PRICE,"
+        + " P.CATEGORY_ID FROM PRODUCT P JOIN CATEGORY C ON"
         + " P.CATEGORY_ID=C.CATEGORY_ID WHERE DATE_DISCONTINUED IS NULL"
         + " ORDER BY PRODUCT_NAME ASC",function(err,row){
         var r = [];
         var price = 0;
         for(var i in row) {
-          if(price == 5) //price is the 5th column
+          if(price == 4) //price is the 5th column
             row[i] = row[i]/100;
           r.push(row[i]);
           ++price;
         }
+       // console.log(r);
         rows.push(r);
-      },function(){
+      },function(err){
+        if(err){
+          console.log(err)
+        }else{
+          console.log(this);
+        }
         //callback function when all rows are 
         res.render('partials/product_table',{rows:rows});
       })
@@ -115,13 +104,13 @@ router.post('/update',function(req,res,next){
   //console.log(data);
   if(username && (priv == "Admin" || priv == "Manager")){
     db.serialize(function(){
-      if(data.id == ''){
+      if(data.id == ""){
         var stmt = db.prepare("INSERT INTO PRODUCT (PRODUCT_BARCODE_SKU, "+
         "CATEGORY_ID,PRODUCT_NAME,PRICE) VALUES ($sku,$cat,$name,$price)");
         var param = {$sku:data.sku,$cat:data.category_id,$name:data.name,
                      $price:data.price*100};
       }else{
-        var stmt = db.prepare("UPDATE PRODUCT SET PRODUCT_BARCODE_SKU=$sku "+
+        var stmt = db.prepare("UPDATE PRODUCT SET PRODUCT_BARCODE_SKU=$sku, "+
         "CATEGORY_ID=$cat,PRODUCT_NAME=$name,PRICE=$price WHERE PRODUCT_ID=$id");
         var param = {$sku:data.sku,$cat:data.category_id,$name:data.name,
                      $price:data.price*100,$id:data.id};
@@ -130,27 +119,71 @@ router.post('/update',function(req,res,next){
       stmt.run(param,function(err){
         if(err){
           console.log(err);
+          res.json({'data':'failure'});
         }else{
           res.json({'data':'successful'});
           console.log(this);
         }
       });
       stmt.finalize();
-      });
+    });
   }else{
     res.redirect('login');
   }
 });
 
-router.get('/getCategories/:page?', function(req, res, next) {
+router.post('/update_cat',function(req,res,next){
+  var username = req.session.username;
+  var priv = req.session.privledge;
+  var data = req.body; //id, name,parent
+  //console.log(data);
+  if(username && (priv == "Admin" || priv == "Manager")){
+    db.serialize(function(){
+      if(data.id == ""){
+        var stmt = db.prepare("INSERT INTO CATEGORY (PARENT_CATEGORY_ID, "+
+        "CATEGORY_NAME) VALUES ($parent,$name)");
+        var param = {$parent:data.parent,$name:data.name};
+      }else{
+        var stmt = db.prepare("UPDATE CATEGORY SET PARENT_CATEGORY_ID=$sku, "+
+        "CATEGORY_NAME=$cat WHERE CATEGORY_ID=$id");
+        var param = {$parent:data.parent,$name:data.name,$id:data.id};
+      }
+      stmt.run(param,function(err){
+        if(err){
+          console.log(err);
+          res.json({'data':'failure'});
+        }else{
+          res.json({'data':'successful'});
+          console.log(this);
+        }
+      });
+      stmt.finalize();
+    });
+  }else{
+    res.redirect('login');
+  }
+});
+
+router.get('/getCategories/:option?/:format?', function(req, res, next) {
   var username = req.session.username;
   var priv = req.session.privledge;
   var rows = [];
-  var option = req.params.page;
+  var option = req.params.option;
+  var format = req.params.format;
+  var query;
   if(username && (priv == "Admin" || priv == "Manager")){
-    
+    if (option == 2){
+      query = "SELECT * FROM CATEGORY WHERE PARENT_CATEGORY_ID=0 ORDER BY PARENT_CATEGORY_ID asc"
+    }else if(option == 3){
+      if(!isNaN(format)){
+        query = "SELECT * FROM CATEGORY WHERE PARENT_CATEGORY_ID="format+
+          " ORDER BY PARENT_CATEGORY_ID asc"; // 
+      }
+    }else{
+      query = "SELECT * FROM CATEGORY ORDER BY PARENT_CATEGORY_ID asc";
+    }
     db.serialize(function(){
-      db.each("SELECT * FROM CATEGORY ORDER BY PARENT_CATEGORY_ID asc",function(err,row){
+      db.each(query,function(err,row){
         var r = [];
         for(var i in row) {r.push(row[i]);}
         rows.push(r);
@@ -165,10 +198,14 @@ router.get('/getCategories/:page?', function(req, res, next) {
             heirarchy[rows[i][1]].push(rows[i]);
           }
         }
-        if(option){
-          res.render('partials/category_options',{rows:heirarchy});
+        if(format){
+          res.render('partials/category_select',{rows:heirarchy});
         }else{
-          res.render('partials/category',{rows:heirarchy});
+          if(option){
+            res.render('partials/category_options',{rows:heirarchy});
+          }else{
+            res.render('partials/category',{rows:heirarchy});
+          }
         }
       })
     });
@@ -177,6 +214,31 @@ router.get('/getCategories/:page?', function(req, res, next) {
   }
 });
 
+router.post('/delete/:table', function(req, res, next) {
+  var username = req.session.username;
+  var priv = req.session.privledge;
+  var data = req.body;
+  var option = req.params.table;
+  if(username && (priv == "Admin" || priv == "Manager")){
+    var pk = option + "_id";
+    db.serialize(function(){
+      var stmt = db.prepare("DELETE FROM "+option+" WHERE "+pk+" = $id");
+      var param = {$id:data.id};
+      stmt.run(param,function(err){
+        if(err){
+          console.log(err);
+          res.json({'data':'failure'});
+        }else{
+          res.json({'data':'successful'});
+          console.log(this);
+        }
+      });
+      stmt.finalize();
+    });
+  }else{
+    res.redirect('login');
+  }
+});
 
 router.post('/signin', function(req, res, next) {
   var username = req.body.username;
