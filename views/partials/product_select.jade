@@ -1,0 +1,12 @@
+div.row
+  each val in rows
+    div.col-xs-2.col-sm-2.no-gutter
+      button.resultButton.product(data-id=val[0],data-cat=val[5],
+        data-price=val[4],data-name=val[2],data-sku=val[1],
+        onClick="this.blur();")=val[2]
+- if(page >= 1)
+  div.row
+    div.col-xs-6.col-sm-6.no-gutter
+      button.resultButton(id="nextPage") Next Page
+    div.col-xs-6.col-sm-6.no-gutter
+      button.resultButton(id="nextPage") Prev Page

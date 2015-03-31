@@ -3,7 +3,7 @@ var router = express.Router();
 var sqlite3 = require('sqlite3').verbose();
 
 var db = new sqlite3.Database('data/posdb');
-
+var tempCatNum = 0;
 /* GET home page. */
 router.get('/', function(req, res, next) {
   var username = req.session.username;
@@ -61,12 +61,14 @@ router.get('/login', function(req, res, next) {
   res.render('login');
 });
 
-router.get('/getProducts',function(req,res,next){
+router.get('/getProducts/:option?/:start?/:end?',function(req,res,next){
   var username = req.session.username;
   var priv = req.session.privledge;
+  var option = req.params.option;
+  var start = req.params.start;
+  var end = req.params.end;
   var rows = [];
-  if(username && (priv == "Admin" || priv == "Manager")){
-    
+  if(username){ //&& (priv == "Admin" || priv == "Manager")
     db.serialize(function(){
       db.each("SELECT PRODUCT_ID,PRODUCT_BARCODE_SKU, PRODUCT_NAME, CATEGORY_NAME, PRICE,"
         + " P.CATEGORY_ID FROM PRODUCT P JOIN CATEGORY C ON"
@@ -89,7 +91,23 @@ router.get('/getProducts',function(req,res,next){
           console.log(this);
         }
         //callback function when all rows are 
-        res.render('partials/product_table',{rows:rows});
+        if(option){
+          var pagiNeed = 0;
+          option -= Math.ceil(tempCatNum/6);
+          var maxProd = option*6;
+          if(!start){start = 0;}
+          if(!end){end = rows.length}
+          if(rows.length > maxProd){
+            pagiNeed = 1;
+            rows = rows.splice(start,maxProd);
+          }else{
+            rows = rows.splice(start,end);
+          }
+          console.log(rows)
+          res.render('partials/product_select', {rows: rows, page:pagiNeed});
+        }else{
+          res.render('partials/product_table',{rows:rows});
+        }
       })
     });
   }else{
@@ -171,12 +189,12 @@ router.get('/getCategories/:option?/:format?', function(req, res, next) {
   var option = req.params.option;
   var format = req.params.format;
   var query;
-  if(username && (priv == "Admin" || priv == "Manager")){
+  if(username){ //&& (priv == "Admin" || priv == "Manager")
     if (option == 2){
       query = "SELECT * FROM CATEGORY WHERE PARENT_CATEGORY_ID=0 ORDER BY PARENT_CATEGORY_ID asc"
     }else if(option == 3){
       if(!isNaN(format)){
-        query = "SELECT * FROM CATEGORY WHERE PARENT_CATEGORY_ID="format+
+        query = "SELECT * FROM CATEGORY WHERE PARENT_CATEGORY_ID="+format+
           " ORDER BY PARENT_CATEGORY_ID asc"; // 
       }
     }else{
@@ -199,6 +217,7 @@ router.get('/getCategories/:option?/:format?', function(req, res, next) {
           }
         }
         if(format){
+          tempCatNum = rows.length;
           res.render('partials/category_select',{rows:heirarchy});
         }else{
           if(option){

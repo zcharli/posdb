@@ -267,7 +267,7 @@ a {
   letter-spacing: 2px;
   overflow: hidden;
   height:75px;
-
+  white-space: normal;
   padding: 15px 15px;
   position: relative;
   text-transform: uppercase;
@@ -275,16 +275,16 @@ a {
           transition: all 0.3s ease;
   width: 100%;
 }
-.resultButton:hover, .resultButton:focus {
+.resultButton:hover{
   background-color: #1b1b1b;
   box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
 }
-.resultButton:hover, .resultButton:focus {
+.resultButton:hover {
   border-width: 0 0 0 0 !important;
 }
-.resultButton:active {
+/*.resultButton:active {
   box-shadow: 0 0 0 0 #000;
-}
+}*/
 
 .vh87{
   height: 87vh;
