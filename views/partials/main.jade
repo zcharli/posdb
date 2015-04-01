@@ -2,20 +2,33 @@ script(type='text/javascript' src='javascripts/main.js')
 div.row
   div.no-gutter.col-md-4
     div.row.roundedBox.shoppingList
-      div
-        table(id='tblCart', class='table')
-          thead
-            tr
-              th SKU 
-              th Detail
-              th Quantity
-              th Price
-          tbody
-          
-            
+      table.table.table-hover(id='tblCart')
+        thead
+          tr
+            th SKU 
+            th Detail
+            th Quantity
+            th Price
+        tbody
     div.row.roundedBox.priceTab
-        p PRICE
-
+      div.row
+        div.col-xs-8
+          div.row
+            h2 Subtotal
+          div.row
+            h4 Tax
+          div.row
+            h4 Items
+        div.col-xs-4
+          div.row
+            h2#subtotal $0.00
+          div.row
+            h4#tax $0.00
+          div.row
+            h4#items 0
+      div.row
+        button.btn.btn-success#btnPurchase PURCHASE
+          span(class='glyphicon glyphicon glyphicon-shopping-cart', style='padding-left:15px') 
   div.col-md-8
     div.row
       div.searchDiv
