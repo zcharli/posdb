@@ -338,7 +338,7 @@ a {
   top:50%;
 }
 
-#btnPurchase{
+.purchButton{
   width:100%;
   height:100%;
   color: white;

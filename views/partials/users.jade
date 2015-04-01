@@ -1,0 +1,106 @@
+script(type='text/javascript' src='javascripts/user.js')
+div.row
+  div.no-guter.col-md-4
+    div.roundedBoxNoPos.vh87.padme.scrollable.userList
+  div.no-guter.col-md-8
+    div.roundedBoxNoPos.vh87.padme.scrollable 
+      form(name="updateuser", method="post", 
+            data-toggle="validator", id="u_form")
+        h4.float-left Manage Users
+        button.float-right(type="submit",id="btnUserUpdate").btn.btn-success Add/Update
+        div.clear
+        hr
+        div.userPanel
+          div(class='form-inline', style="padding:10px;")
+            div.row
+              div.col-xs-6
+                label.float-right(for='fname',class='control-label') First Name
+              div.col-xs-6
+                label.float-left(for='lname',class='control-label') Last Name
+            div.row
+              div.col-xs-6
+                input.float-right(type="text",class="form-control",
+                  id='fname', maxlength='44',required)
+              div.col-xs-6
+                input.float-left(type="text",class="form-control",
+                  id='lname', maxlength='44',required)
+          div(class='form-inline', style="padding:10px;")
+            div.row
+              div.col-xs-6
+                label.float-right(for='emp',class='control-label') Employee Number
+              div.col-xs-6
+                label(for='password',class='control-label') Password
+            div.row
+              div.col-xs-6
+                input.float-right(type="text",class="form-control",
+                  id='emp',required)
+              div.col-xs-6
+                input(type="text",class="form-control",
+                  id='password', maxlength='44',required)
+          div(class='form-inline', style="padding:10px;")
+            div.row
+              div.col-xs-6
+                label.float-right(for='job_title',class='control-label') Job Title/Clearence
+              div.col-xs-6
+                label(for='wage',class='control-label') Wage
+            div.row
+              div.col-xs-6
+                select.float-right.form-control.selectpicker(name="job_title", id='job_title', required)
+                  option
+              div.col-xs-6
+                input(type="text",class="form-control",
+                  id='wage', maxlength='44',required)
+          div(class='form-inline', style="padding:10px;")
+            div.row
+              div.col-xs-6
+                label.float-right(for='sin',class='control-label') Social Insurance (9 digits)
+              div.col-xs-6
+                label(for='postal',class='control-label') Postal Code
+            div.row
+              div.col-xs-6
+                input.float-right(type="text",class="form-control",id='sin',required)
+              div.col-xs-6
+                input(type="text",class="form-control",
+                  id='postal', maxlength='44',required)
+          div(class='form-inline', style="padding:10px;")
+            div.row
+              div.col-xs-6
+                label.float-right(for='street_num',class='control-label') Street Number
+              div.col-xs-6
+                label(for='street_name',class='control-label') Street Name
+            div.row
+              div.col-xs-6
+                input.float-right(type="text",class="form-control",id='street_num',required)
+              div.col-xs-6
+                input(type="text",class="form-control",
+                  id='street_name', maxlength='44',required)
+          div(class='form-inline', style="padding:10px;")
+            div.row
+              div.col-xs-6
+                label.float-right(for='suit_num',class='control-label') Suite Number
+              div.col-xs-6
+                label(for='suffix',class='control-label') Street Suffix
+            div.row
+              div.col-xs-6
+                input.float-right(type="text",class="form-control",id='suit_num',required)
+              div.col-xs-6
+                input(type="text",class="form-control",
+                  id='suffix', maxlength='44',required)
+          div(class='form-inline', style="padding:10px;")
+            div.row
+              div.col-xs-6
+                label.float-right(for='city',class='control-label') City
+              div.col-xs-6
+                label(for='prov',class='control-label')  Province
+            div.row
+              div.col-xs-6
+                input.float-right(type="text",class="form-control",
+                  id='city', maxlength='44',required)
+              div.col-xs-6
+                input(type="text",class="form-control",id='prov',
+                  required)
+            input(type="hidden", id='user_id')
+            input(type="hidden", id='address_id')
+            input(type="hidden", id='job_id')
+
+          

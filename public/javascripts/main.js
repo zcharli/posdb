@@ -35,35 +35,6 @@ $(function(){
     });
   }
   var cart = [];
-  // var checkQuantity = function(c) {
-  //   var count = 0;
-  //   for(var i = 0;i<cart.length;++i){
-  //     if(cart[i]['id'] == c['id']){
-  //       cart[i]['quantity'] += 1;
-  //       count = cart[i]['quantity'];
-  //       break;
-  //     }
-  //   }
-  //   if(!c.hasOwnProperty('quantity')){
-  //     c['quantity'] = 1;
-  //     count = 1;
-  //   }
-  //   if(c['quantity'] == 1){
-  //     count = 1;
-  //   }
-  //   return count;
-  // }
-
-  // var updateQuantity = function(id,val){
-  //   for(var i = 0;i<cart.length;++i){
-  //     if(cart[i]['id'] == id){
-  //       cart[i]['quantity'] = val;
-  //       break;
-  //     }
-  //   }
-  //   $("#prod_"+id).val(val);
-  // }
-
   var checkQuantity = function(c) {
     var count = 0;
     for(var i = 0;i<cart.length;++i){
@@ -84,7 +55,7 @@ $(function(){
       if(cart[i]['id'] == id){
         cart[i]['quantity'] += 1;
         q = cart[i]['quantity'];
-        console.log("q " + q)
+        //console.log("q " + q)
         break;
       }
     }
@@ -103,7 +74,7 @@ $(function(){
 
   var addToCart = function(c){
     var quantity = checkQuantity(c);
-    console.log(quantity)
+    //console.log(quantity)
     if(quantity == 0){
       table.append(item.compose({
         'sku':c['sku'],
@@ -160,6 +131,14 @@ $(function(){
     $('#items').text(items);
   }
 
+  var getCurrentTotal = function(){
+    var subtotal = 0;
+    for(var i = 0;i<cart.length;++i){
+      subtotal += cart[i]['price']*cart[i]['quantity'];
+    }
+    return subtotal;
+  }
+
   var getProductPane = function() {
     $.get("/getProducts/"+numBtn,function(data){
       prodPane.empty();
@@ -174,4 +153,42 @@ $(function(){
   var numBtn = Math.floor((vHeight - 120)/75);
   getCategoryPane();
   getProductPane();
+  $("#btnPurchase").click(function(e){
+    $('#checkoutModal')
+        .prop('class', 'modal fade') // revert to default
+        .addClass( $(this).data('direction') );
+  $('#checkoutModal').modal({
+    keyboard: true,
+    show:false
+    }).on('shown.bs.modal',function(e){ 
+      var totalcost = getCurrentTotal();
+      var tender = $("#c_tender");
+      $('#the_total').text("$"+totalcost.toFixed(2));
+      tender.keyup(function(){
+        if(tender.val() >= totalcost && totalcost != 0){
+          $('#btnFinalize').removeAttr('disabled','disabled');
+          $('#c_change').text((Number(tender.val()) - totalcost).toFixed(2));
+        }else{
+          $('#btnFinalize').attr('disabled','disabled');
+        }
+      });
+      $("#btnFinalize").click(function(){
+        e.preventDefault();
+        // $.ajax({
+        //   type: 'POST',
+        //   url: '/checkout',
+        //   data: JSON.stringify(cart),
+        //   success: function(res) {
+        //     console.log(res);
+        //     if (res['data'] == 'successful') {
+              
+        //     }
+        //     else {
+        //       alert("Something terrible happened while saving");
+        //     } 
+        //   }
+        // });
+      });
+    });
+  });
 });

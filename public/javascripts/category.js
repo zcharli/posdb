@@ -20,6 +20,11 @@ $(document).ready(function () {
               $('.pnlCat').empty();
               $('.pnlCat').append(data);
             });
+            $.get("/getCategories/1",function(data){
+              $("#cat_name").empty();
+              $("#cat_name").append("<option></option>")
+              $("#cat_name").append(data);
+            });
           }
           else {
             alert("Something terrible happened while saving");

@@ -27,7 +27,8 @@ div.row
           div.row
             h4#items 0
       div.row
-        button.btn.btn-success#btnPurchase PURCHASE
+        button.btn.btn-success.purchButton#btnPurchase(data-target='#checkoutModal', data-toggle='modal',
+          data-direction="bottom") PURCHASE
           span(class='glyphicon glyphicon glyphicon-shopping-cart', style='padding-left:15px') 
   div.col-md-8
     div.row
@@ -36,3 +37,28 @@ div.row
     div.categoryResult
 
     div.productResult
+div.checkout-modal
+  div(id='checkoutModal', class='modal fade', role='dialog', aria-hidden='true',
+  aria-labelledby="checkoutModalLabel")
+    div(class='modal-dialog')
+      div(class='modal-content')
+        form(name="checkout", method="post",id="checkout_form")
+          div(class='modal-header')
+            button(type='button', class='btn btn-primary float-right', 
+              data-dismiss="modal") Close
+              span(class='glyphicon glyphicon-floppy-save', style='padding-left:15px') 
+            h4.float-left Checkout
+            div.clear
+          div(class='modal-body')
+            div(class='form-group')
+              label Total
+              h1#the_total(style="text-align:center;font-size:900%;") 
+            div(class='form-group')
+              label(for='c_tender',class='control-label') Tender
+              input(type="text",class="form-control",id='c_tender')
+            div(class='form-group')
+              label Change
+              h1#c_change(style="text-align:center;font-size:450%;")
+        div(class='modal-footer')
+          button(type='submit', class='btn btn-success purchButton', disabled, 
+            id='btnFinalize') FINALIZE SALE

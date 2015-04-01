@@ -233,6 +233,46 @@ router.get('/getCategories/:option?/:format?', function(req, res, next) {
   }
 });
 
+router.get('/getUsers/:option?', function(req, res, next) {
+  var username = req.session.username;
+  var priv = req.session.privledge;
+  var rows = [];
+  var option = req.params.option;
+  var query;
+  if(username && (priv == "Admin" || priv == "Manager")){
+    if(option){
+      query = "SELECT * FROM JOB_TITLE ORDER BY JOB_TITLE_NAME DESC";
+    }else{
+      query = "SELECT EMPlOYEE_NUMBER,FNAME,LNAME,HOURLY_WAGE,SOCIAL_INSURANCE,"+
+      "E.JOB_TITLE_ID,E.ADDRESS_ID,J.JOB_TITLE_NAME,STREET_NUMBER,STREET_NAME,"+
+      "STREET_SUFFIX,SUITE_NUMBER,CITY,PROVINCE,POSTAL_CODE FROM EMPlOYEE E "+
+      "JOIN JOB_TITLE J ON E.JOB_TITLE_ID=J.JOB_TITLE_ID JOIN ADDRESS A ON "+
+      "E.ADDRESS_ID=A.ADDRESS_ID ORDER BY FNAME DESC;";
+    }
+    db.serialize(function(){
+      db.each(query,function(err,row){
+        var r = [];
+        for(var i in row) {r.push(row[i]);}
+        rows.push(r);
+      },function(err){
+        if(err){
+          console.log(err)
+        }else{
+          console.log(this);
+        }
+        console.log(rows);
+        if(option){
+          res.render('partials/jobtitle',{rows:rows});
+        }else{
+          res.render('partials/userlist',{rows:rows});
+        }
+      })
+    });
+  }else{
+    res.redirect('login');
+  }
+});
+
 router.post('/delete/:table', function(req, res, next) {
   var username = req.session.username;
   var priv = req.session.privledge;
