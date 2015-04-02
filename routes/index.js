@@ -96,10 +96,9 @@ router.get('/getProducts/:option?/:page?/:bar?/:criteria?/:force?',function(req,
                 + " P.CATEGORY_ID FROM PRODUCT P JOIN CATEGORY C ON"
                 + " P.CATEGORY_ID=C.CATEGORY_ID WHERE"
                 + " P.CATEGORY_ID=$filter"
-                + " OR P.CATEGORY_ID IN (SELECT CATEGORY_ID FROM CATEGORY WHERE PARENT_CATEGORY_ID="+filter+")"
+                + " OR P.CATEGORY_ID IN (SELECT CATEGORY_ID FROM CATEGORY WHERE PARENT_CATEGORY_ID=$filter)"
                 +" AND DATE_DISCONTINUED IS NULL"
                 + " ORDER BY PRODUCT_NAME ASC"; 
-            
 
           }
         }else{
