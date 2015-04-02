@@ -1,7 +1,8 @@
 ul.list-group
   each array, index in rows
-    li.list-group-item(id=array[0],class="userList",
+    li.list-group-item(data-id=array[0],class="userProfile",
       data-wage=array[3],data-sin=array[4],data-jid=array[5],
-      data-empid=array[6],data-jname=array[7],data-stnum=array[8],
+      data-addrid=array[6],data-jname=array[7],data-stnum=array[8],
       data-stname=array[9],data-stsuff=array[10],data-suite=array[11],
-      data-city=array[12],data-prov=array[13],data-postal=array[14])= array[2] + ", " + array[1]
+      data-city=array[12],data-prov=array[13],data-postal=array[14],
+      data-lname=array[2],data-fname=array[1])= array[2] + ", " + array[1]

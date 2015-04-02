@@ -1,12 +1,23 @@
-div.row
-  each val in rows
-    div.col-xs-2.col-sm-2.no-gutter
-      button.resultButton.product(data-id=val[0],data-cat=val[5],
-        data-price=val[4],data-name=val[2],data-sku=val[1],
-        onClick="this.blur();")=val[2]
-- if(page >= 1)
+-if(showbar)
+  div.row.productList
+    each val in rows
+      div.col-xs-2.col-sm-2.no-gutter
+        button.resultButton.product(data-id=val[0],data-cat=val[5],
+          data-price=val[4],data-name=val[2],data-sku=val[1],
+          onClick="this.blur();")=val[2]
+-else
+    each val in rows
+      div.col-xs-2.col-sm-2.no-gutter
+        button.resultButton.product(data-id=val[0],data-cat=val[5],
+          data-price=val[4],data-name=val[2],data-sku=val[1],
+          onClick="this.blur();")=val[2]
+- if(pages > 1 && showbar)
   div.row
     div.col-xs-6.col-sm-6.no-gutter
-      button.resultButton(id="nextPage") Next Page
+      button.resultButton(id="prevPage",onClick="this.blur();") Prev Page
     div.col-xs-6.col-sm-6.no-gutter
-      button.resultButton(id="nextPage") Prev Page
+      button.resultButton(id="nextPage",onClick="this.blur();") Next Page
+    input(type='hidden',id="maxPageNum",value=pages)
+
+
+    

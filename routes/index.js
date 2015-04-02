@@ -61,19 +61,57 @@ router.get('/login', function(req, res, next) {
   res.render('login');
 });
 
-router.get('/getProducts/:option?/:start?/:end?',function(req,res,next){
+router.get('/getProducts/:option?/:page?/:bar?/:criteria?/:force?',function(req,res,next){
   var username = req.session.username;
   var priv = req.session.privledge;
   var option = req.params.option;
-  var start = req.params.start;
-  var end = req.params.end;
+  var page = req.params.page;
+  var bar = req.params.bar;
+  var filter = req.params.criteria;
+  var forceid = req.params.forceid;
+  var start = 0;
+  var end = 0;
   var rows = [];
+  var query;
   if(username){ //&& (priv == "Admin" || priv == "Manager")
     db.serialize(function(){
-      db.each("SELECT PRODUCT_ID,PRODUCT_BARCODE_SKU, PRODUCT_NAME, CATEGORY_NAME, PRICE,"
+      if(filter){
+        if(!isNaN(filter)){
+          //checking id's
+          if(forceid){
+            //checking exact id's
+            query = "SELECT PRODUCT_ID,PRODUCT_BARCODE_SKU, PRODUCT_NAME, CATEGORY_NAME, PRICE,"
+                + " P.CATEGORY_ID FROM PRODUCT P JOIN CATEGORY C ON"
+                + " P.CATEGORY_ID=C.CATEGORY_ID WHERE"
+                + " P.CATEGORY_ID="+filter
+                +" AND DATE_DISCONTINUED IS NULL"
+                + " ORDER BY PRODUCT_NAME ASC";  
+          }else{
+            //checking loose id's
+            query = "SELECT PRODUCT_ID,PRODUCT_BARCODE_SKU, PRODUCT_NAME, CATEGORY_NAME, PRICE,"
+                + " P.CATEGORY_ID FROM PRODUCT P JOIN CATEGORY C ON"
+                + " P.CATEGORY_ID=C.CATEGORY_ID WHERE"
+                + " P.CATEGORY_ID="+filter
+                + " OR P.CATEGORY_ID IN (SELECT CATEGORY_ID FROM CATEGORY WHERE PARENT_CATEGORY_ID="+filter+")"
+                +" AND DATE_DISCONTINUED IS NULL"
+                + " ORDER BY PRODUCT_NAME ASC";            
+          }
+        }else{
+          //matching name query
+          query = "SELECT PRODUCT_ID,PRODUCT_BARCODE_SKU, PRODUCT_NAME, CATEGORY_NAME, PRICE,"
+                + " P.CATEGORY_ID FROM PRODUCT P JOIN CATEGORY C ON"
+                + " P.CATEGORY_ID=C.CATEGORY_ID WHERE"
+                + " PRODUCT_NAME LIKE '%"+filter+"%'"
+                +" AND DATE_DISCONTINUED IS NULL"
+                + " ORDER BY PRODUCT_NAME ASC";  
+        }
+      }else{
+        query = "SELECT PRODUCT_ID,PRODUCT_BARCODE_SKU, PRODUCT_NAME, CATEGORY_NAME, PRICE,"
         + " P.CATEGORY_ID FROM PRODUCT P JOIN CATEGORY C ON"
         + " P.CATEGORY_ID=C.CATEGORY_ID WHERE DATE_DISCONTINUED IS NULL"
-        + " ORDER BY PRODUCT_NAME ASC",function(err,row){
+        + " ORDER BY PRODUCT_NAME ASC";
+      }
+      db.each(query,function(err,row){
         var r = [];
         var price = 0;
         for(var i in row) {
@@ -90,21 +128,33 @@ router.get('/getProducts/:option?/:start?/:end?',function(req,res,next){
         }else{
           console.log(this);
         }
+
         //callback function when all rows are 
         if(option){
-          var pagiNeed = 0;
+          var showBar = true;
+          if(bar){
+            showBar = false;
+          }
+          var pageEnd = 0;
           option -= Math.ceil(tempCatNum/6);
-          var maxProd = option*6;
-          if(!start){start = 0;}
-          if(!end){end = rows.length}
-          if(rows.length > maxProd){
-            pagiNeed = 1;
-            rows = rows.splice(start,maxProd);
+          var maxProd = option*6; //maximum products per page
+          var totalRows = rows.length;
+          var maxPage = Math.ceil(totalRows/maxProd);
+          end = rows.length;
+          start = start+page*maxProd;
+          if(end - maxProd > 0){
+            console.log(maxProd)
+            pageEnd = maxProd;
+            rows = rows.splice(start,
+                                maxProd+page*maxProd);
           }else{
+            pageEnd = end;
             rows = rows.splice(start,end);
           }
-          console.log(rows)
-          res.render('partials/product_select', {rows: rows, page:pagiNeed});
+
+          res.render('partials/product_select', {rows:rows,
+            pages:maxPage,shownext:page!=maxPage-1,showprev:start!=0,
+            showbar:showBar});
         }else{
           res.render('partials/product_table',{rows:rows});
         }
@@ -134,6 +184,95 @@ router.post('/update',function(req,res,next){
                      $price:data.price*100,$id:data.id};
       }
 
+      stmt.run(param,function(err){
+        if(err){
+          console.log(err);
+          res.json({'data':'failure'});
+        }else{
+          res.json({'data':'successful'});
+          console.log(this);
+        }
+      });
+      stmt.finalize();
+    });
+  }else{
+    res.redirect('login');
+  }
+});
+
+router.post('/updateuser',function(req,res,next){
+  var username = req.session.username;
+  var priv = req.session.privledge;
+  var data = req.body; //id, name,price,category_id,sku
+  console.log(data);
+  if(username && (priv == "Admin" || priv == "Manager")){
+    var lastAddrId = 0;
+    db.serialize(function(){
+     if(data.addrid == ""){
+        var stmt = db.prepare("INSERT INTO ADDRESS (PRODUCT_BARCODE_SKU, "+
+        "CATEGORY_ID,PRODUCT_NAME,PRICE) VALUES ($sku,$cat,$name,$price)");
+        var paramsAddr = {
+          $postal:data.postal,
+          $street_num:data.street_num,
+          $street_name:data.street_name,
+          $suit_num:data.suit_num,
+          $suffix:data.suffix,
+          $city:data.city,
+          $prov:data.prov,
+          $addrid:data.addrid
+        };
+      }else{
+        var stmt = db.prepare("UPDATE PRODUCT SET PRODUCT_BARCODE_SKU=$sku, "+
+        "CATEGORY_ID=$cat,PRODUCT_NAME=$name,PRICE=$price WHERE PRODUCT_ID=$id");
+        var paramsAddr = {
+          $postal:data.postal,
+          $street_num:data.street_num,
+          $street_name:data.street_name,
+          $suit_num:data.suit_num,
+          $suffix:data.suffix,
+          $city:data.city,
+          $prov:data.prov,
+          $addrid:data.addrid
+        };
+      }
+      stmt.run(param,function(err){
+        if(err){
+          console.log(err);
+          //res.json({'data':'failure'});
+        }else{
+          //res.json({'data':'successful'});
+          console.log(this);
+          lastAddrId = this.lastID;
+        }
+      });
+      stmt.finalize();
+      //adding employee
+      if(data.emp == ""){
+        var stmt = db.prepare("INSERT INTO EMPLOYEE (PRODUCT_BARCODE_SKU, "+
+        "CATEGORY_ID,PRODUCT_NAME,PRICE) VALUES ($sku,$cat,$name,$price)"); 
+        var paramEmp = {
+          $fname:data.fname,
+          $lname:data.lname,
+          $emp:data.emp,
+          $password:data.password,
+          $wage:data.wage,
+          $sin:data.sin,
+          $job_id:data.job_id,
+          $addrId: lastAddrId
+        };
+      }else{
+        var stmt = db.prepare("UPDATE EMPLOYEE SET PRODUCT_BARCODE_SKU=$sku, "+
+        "CATEGORY_ID=$cat,PRODUCT_NAME=$name,PRICE=$price WHERE PRODUCT_ID=$id");
+        var paramEmp = {
+          $fname:data.fname,
+          $lname:data.lname,
+          $emp:data.emp,
+          $password:data.password,
+          $wage:data.wage,
+          $sin:data.sin,
+          $job_id:data.job_id
+        };
+      }
       stmt.run(param,function(err){
         if(err){
           console.log(err);
@@ -208,14 +347,24 @@ router.get('/getCategories/:option?/:format?', function(req, res, next) {
       },function(){
         //callback function when all rows are 
         var heirarchy = {};
-        for(var i=0;i<rows.length;++i){
-          if(rows[i][1] == 0){
+        if(format){
+          //called when we dont want ordering
+          for(var i=0;i<rows.length;++i){
             heirarchy[rows[i][0]] = [];
             heirarchy[rows[i][0]].push(rows[i]);
-          }else{
-            heirarchy[rows[i][1]].push(rows[i]);
+          }
+        }else{
+          //called when we want both parent and children in order
+          for(var i=0;i<rows.length;++i){
+            if(rows[i][1] == 0){
+              heirarchy[rows[i][0]] = [];
+              heirarchy[rows[i][0]].push(rows[i]);
+            }else{
+              heirarchy[rows[i][1]].push(rows[i]);
+            }
           }
         }
+        console.log(heirarchy)
         if(format){
           tempCatNum = rows.length;
           res.render('partials/category_select',{rows:heirarchy});
@@ -260,7 +409,7 @@ router.get('/getUsers/:option?', function(req, res, next) {
         }else{
           console.log(this);
         }
-        console.log(rows);
+        //console.log(rows);
         if(option){
           res.render('partials/jobtitle',{rows:rows});
         }else{

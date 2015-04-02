@@ -1,67 +1,94 @@
 $(document).ready(function () {
   var pnlUsers = $('.userList');
-  $.get("/getUsers",function(data){
-    pnlUsers.empty();
-    pnlUsers.append(data);
-  });
+  var getUsers = function() {
+    $.get("/getUsers",function(data){
+      pnlUsers.empty();
+      pnlUsers.append(data);
+      addUserAccountHandler();
+    });
+  }
+
+  $.fn.serializeObject = function()
+  {//form serialization
+    var o = {};
+    var a = this.serializeArray();
+    $.each(a, function() {
+      if (o[this.name] !== undefined) {
+        if (!o[this.name].push) {
+            o[this.name] = [o[this.name]];
+        }
+        o[this.name].push(this.value || '');
+      } else {
+        o[this.name] = this.value || '';
+      }
+    });
+    return o;
+  };
+
   $.get("/getUsers/1",function(data){
     $("#job_title").empty();
     $("#job_title").append("<option></option>");
     $("#job_title").append(data);
   });
 
+  $("#btnClear").click(function(){
+    $("#user_id").val("");
+    $("#address_id").val("");
+    $("#job_id").val("");
+  });
+
+  var addUserAccountHandler = function() {
+    $(".userProfile").click(function(e){
+      var data = $(this).data();
+      prepopulateFields(data);
+    });
+  }
+
+  var prepopulateFields = function(data){
+    $("#fname").val(data.fname);
+    $("#lname").val(data.lname);
+    $("#emp").val(data.id);
+    $("#password").val();
+    $("#job_title").val(data.jid);
+    $("#wage").val(data.wage);
+    $("#sin").val(data.sin);
+    $("#postal").val(data.postal);
+    $("#street_num").val(data.stnum);
+    $("#street_name").val(data.stname);
+    $("#suit_num").val(data.suite);
+    $("#suffix").val(data.stsuff);
+    $("#city").val(data.city);
+    $("#prov").val(data.prov);
+    $("#user_id").val(data.id);
+    $("#address_id").val(data.addrid);
+    $("#job_id").val(data.jid);
+  }
+
   $('#u_form').validator().on('submit', function(e) {
     if(e.isDefaultPrevented())  {
       //alert("The form is not completed correctly");
     } else {
       e.preventDefault();
+      //console.log(JSON.stringify($('form').serializeObject()))
       $.ajax({
         type: 'POST',
-        url: '/updateruser',
-        data: {'id': $('#cat_id').val(),
-               'name': $('#cat_detail').val(),
-               'parent': $('#cat_parent').val()},
+        url: '/updateuser',
+        data: JSON.stringify($('form').serializeObject()),
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
         success: function(res) {
           console.log(res);
           if (res['data'] == 'successful') {
-            // alert("Add was successful, you may continue adding");
-            // $('#cat_id').val("");
-            // $('#cat_detail').val("");
-            // $.get("/getCategories",function(data){
-            //   $('.pnlCat').empty();
-            //   $('.pnlCat').append(data);
-            // });
-            // $.get("/getCategories/1",function(data){
-            //   $("#cat_name").empty();
-            //   $("#cat_name").append("<option></option>")
-            //   $("#cat_name").append(data);
-            // });
+            getUsers();
           }
           else {
             alert("Something terrible happened while saving");
           } 
         }
       });
+      return false;
     }
   });
-  // $(function(){
-  //   $(".cat_row").click(function(e){
-  //     e.preventDefault();
-  //     $('#updateCategory')
-  //         .prop('class', 'modal fade') // revert to default
-  //         .addClass( $(this).data('direction') );
-  //     $('#updateCategory').modal({
-  //     keyboard: true,
-  //     show:false
-  //     }).on('shown.bs.modal',function(e){ 
-  //       $('#btnDeleteCat').removeAttr('disabled','disabled');
-  //       var row = $(e.relatedTarget).data();
-  //       if(row){//on update, else its on insert
-  //         $('#cat_detail').val(row['name']);
-  //         $('#cat_parent').val(row['parent']);
-  //         $('#cat_id').val(row['id']);
-  //       };
-  //     });
-  //   });
-  // });
+
+  getUsers();
 });

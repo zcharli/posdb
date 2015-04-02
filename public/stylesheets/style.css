@@ -351,3 +351,11 @@ a {
   -webkit-transition: all 0.3s ease;
           transition: all 0.3s ease;
 }
+
+#tblProduct tr:hover{
+  cursor:hand;
+}
+
+#mainHr{
+  margin: 1.1em auto;
+}

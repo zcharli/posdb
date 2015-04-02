@@ -21,6 +21,7 @@ $(function(){
   var tblCart = $("#tblCart").children('tbody');
   var table = tblCart.length ? tblCart : $('#tblCart');
   //appender template
+  var numCategory = 1;
   var item = '<tr id="row_{{id}}">'+
              '<td>{{sku}}</td>'+
              '<td>{{name}}</td>'+
@@ -32,8 +33,80 @@ $(function(){
     $.get("/getCategories/2/all",function(data){
       catPane.empty();
       catPane.append(data);
+      numCategory = Math.ceil($(".clickable_cat").length/6);
+      addCategoryHandlers();
     });
   }
+
+  $("#search_me").keyup(function(){
+    var val = $("#search_me").val()
+    if(!val){
+      getProductPane();
+    }else{
+      console.log("get")
+      $.get("/getProducts/"+numBtn+"/"+currPage+"/bar/"+$("#search_me").val(),function(data){
+        $(".productList").empty();
+        $(".productList").append(data);
+        addProductHandlers();
+      });
+    }
+  });
+
+  var addCategoryHandlers = function() {
+    $(".clickable_cat").click(function(){
+      if($(this).attr('data-id')){
+        var id = $.parseJSON($(this).attr('data-id'));
+      }
+      getMatchingSubCat(id);
+      $.get("/getCategories/3/"+id,function(data){
+        //3 to get children cats
+        catPane.empty();
+        catPane.append(data);
+        $(".catRow").append('<div class="col-xs-2 col-sm-2 no-gutter">'+
+          '<button id="backToMainCat" class="resultButton">Go back'+
+          '</button></div>');
+        if($(this).attr('data-id')){
+          var id = $.parseJSON($(this).attr('data-id'));
+        }
+        addSubcategoryHandlers(id);
+        $("#backToMainCat").click(function(){
+          getCategoryPane();
+          getProductPane();
+        });
+      });
+    });
+  }
+
+  var addSubcategoryHandlers = function(){
+    $(".clickable_cat").click(function(){
+      if($(this).attr('data-id')){
+        var id = $.parseJSON($(this).attr('data-id'));
+      }
+      getMatchingLeafCat(id);
+    });
+  }
+
+  var getMatchingLeafCat = function(id){
+    if(id){
+      currPage = 0;
+      $.get("/getProducts/"+numBtn+"/"+currPage+"/bar/"+id+"/yes",function(data){
+        $(".productList").empty();
+        $(".productList").append(data);
+        addProductHandlers();
+      });
+    }
+  }
+  var getMatchingSubCat = function(id){
+    if(id){
+      currPage = 0;
+      $.get("/getProducts/"+numBtn+"/"+currPage+"/bar/"+id,function(data){
+        $(".productList").empty();
+        $(".productList").append(data);
+        addProductHandlers();
+      });
+    }
+  }
+
   var cart = [];
   var checkQuantity = function(c) {
     var count = 0;
@@ -138,19 +211,47 @@ $(function(){
     }
     return subtotal;
   }
-
-  var getProductPane = function() {
-    $.get("/getProducts/"+numBtn,function(data){
-      prodPane.empty();
-      prodPane.append(data);
-      $('.product').click(function(e){
+  var addProductHandlers = function() {
+    $('.product').click(function(e){
         e.preventDefault();
         var el = $(this).data();
         addToCart(el);
       });
+  }
+  var currPage = 0;
+  var getProductPane = function() {
+    $.get("/getProducts/"+numBtn+"/0",function(data){
+      prodPane.empty();
+      prodPane.append(data);
+      addProductHandlers();
+      var maxPage = $("#maxPageNum").val();
+      $("#nextPage").click(function(){
+        if(currPage+1 < maxPage){
+          currPage++;
+          $.get("/getProducts/"+numBtn+"/"+currPage+"/bar",function(data){
+            $(".productList").empty();
+            $(".productList").append(data);
+            addProductHandlers();
+          });
+        }
+      });
+      $("#prevPage").click(function(){
+        console.log(currPage)
+        if(currPage - 1 >= 0){
+          currPage--;
+          $.get("/getProducts/"+numBtn+"/"+currPage+"/bar",function(data){
+            $(".productList").empty();
+            $(".productList").append(data);
+            addProductHandlers();
+          });
+        }
+      });
     });
   }
-  var numBtn = Math.floor((vHeight - 120)/75);
+  var numBtn = Math.floor((vHeight - 120 - 75)/75);
+  console.log(Math.floor((vHeight - 120)/75))
+  console.log(numCategory)
+
   getCategoryPane();
   getProductPane();
   $("#btnPurchase").click(function(e){

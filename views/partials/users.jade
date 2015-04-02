@@ -8,6 +8,7 @@ div.row
             data-toggle="validator", id="u_form")
         h4.float-left Manage Users
         button.float-right(type="submit",id="btnUserUpdate").btn.btn-success Add/Update
+        button.float-right(type="reset",id="btnClear",style="margin-right:10px").btn.btn-warning Clear
         div.clear
         hr
         div.userPanel
@@ -20,10 +21,10 @@ div.row
             div.row
               div.col-xs-6
                 input.float-right(type="text",class="form-control",
-                  id='fname', maxlength='44',required)
+                  id='fname',name="fname", maxlength='44',required)
               div.col-xs-6
                 input.float-left(type="text",class="form-control",
-                  id='lname', maxlength='44',required)
+                  id='lname',name="lname", maxlength='44',required)
           div(class='form-inline', style="padding:10px;")
             div.row
               div.col-xs-6
@@ -33,10 +34,10 @@ div.row
             div.row
               div.col-xs-6
                 input.float-right(type="text",class="form-control",
-                  id='emp',required)
+                  id='emp',name="emp",required)
               div.col-xs-6
                 input(type="text",class="form-control",
-                  id='password', maxlength='44',required)
+                  id='password',name="password", maxlength='44',required)
           div(class='form-inline', style="padding:10px;")
             div.row
               div.col-xs-6
@@ -48,7 +49,7 @@ div.row
                 select.float-right.form-control.selectpicker(name="job_title", id='job_title', required)
                   option
               div.col-xs-6
-                input(type="text",class="form-control",
+                input(type="text",name="wage",class="form-control",
                   id='wage', maxlength='44',required)
           div(class='form-inline', style="padding:10px;")
             div.row
@@ -58,9 +59,9 @@ div.row
                 label(for='postal',class='control-label') Postal Code
             div.row
               div.col-xs-6
-                input.float-right(type="text",class="form-control",id='sin',required)
+                input.float-right(type="text",name="sin",class="form-control",id='sin',required)
               div.col-xs-6
-                input(type="text",class="form-control",
+                input(type="text",name="postal",class="form-control",
                   id='postal', maxlength='44',required)
           div(class='form-inline', style="padding:10px;")
             div.row
@@ -70,9 +71,9 @@ div.row
                 label(for='street_name',class='control-label') Street Name
             div.row
               div.col-xs-6
-                input.float-right(type="text",class="form-control",id='street_num',required)
+                input.float-right(type="text",name="street_num",class="form-control",id='street_num',required)
               div.col-xs-6
-                input(type="text",class="form-control",
+                input(type="text",name="street_name",class="form-control",
                   id='street_name', maxlength='44',required)
           div(class='form-inline', style="padding:10px;")
             div.row
@@ -82,9 +83,9 @@ div.row
                 label(for='suffix',class='control-label') Street Suffix
             div.row
               div.col-xs-6
-                input.float-right(type="text",class="form-control",id='suit_num',required)
+                input.float-right(type="text",name="suit_num",class="form-control",id='suit_num')
               div.col-xs-6
-                input(type="text",class="form-control",
+                input(type="text",name="suffix",class="form-control",
                   id='suffix', maxlength='44',required)
           div(class='form-inline', style="padding:10px;")
             div.row
@@ -94,13 +95,13 @@ div.row
                 label(for='prov',class='control-label')  Province
             div.row
               div.col-xs-6
-                input.float-right(type="text",class="form-control",
+                input.float-right(type="text",name="city",class="form-control",
                   id='city', maxlength='44',required)
               div.col-xs-6
-                input(type="text",class="form-control",id='prov',
+                input(type="text",name="prov",class="form-control",id='prov',
                   required)
-            input(type="hidden", id='user_id')
-            input(type="hidden", id='address_id')
-            input(type="hidden", id='job_id')
+            input(type="hidden",name="user_id", id='user_id')
+            input(type="hidden",name="address_id", id='address_id')
+            input(type="hidden",name="job_id", id='job_id')
 
           

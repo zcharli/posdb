@@ -1,10 +1,10 @@
 - var n = 0
-div.row
+div.row.catRow
   - for(var i in rows)
     div.col-xs-2.col-sm-2.no-gutter
-      button.resultButton(data-id=rows[i][0][0])=rows[i][0][2] 
+      button.resultButton.clickable_cat(data-id=rows[i][0][0])=rows[i][0][2] 
     - n++
 - if(n > 0)
   div.clearfix
-  hr(style='position:relative')
+  hr#mainHr(style='position:relative')
   input(type="hidden", value=n,id='numCat')
