@@ -183,7 +183,18 @@ $(function(){
       }
     }else{
       // remove everything
+      for(var i = 0;i<cart.length;++i){
+        $('#row_'+cart[i]['id']).remove();
+      }
+      cart = [];
+      clearTotals();
     }
+  }
+
+  var clearTotals = function(){
+    $('#subtotal').text("$"+0.00);
+    $('#tax').text("$"+0.00);
+    $('#items').text(0);
   }
 
   var updatePrice = function(){
@@ -209,7 +220,7 @@ $(function(){
     for(var i = 0;i<cart.length;++i){
       subtotal += cart[i]['price']*cart[i]['quantity'];
     }
-    return subtotal;
+    return subtotal*1.13;
   }
   var addProductHandlers = function() {
     $('.product').click(function(e){
@@ -275,20 +286,26 @@ $(function(){
       });
       $("#btnFinalize").click(function(){
         e.preventDefault();
-        // $.ajax({
-        //   type: 'POST',
-        //   url: '/checkout',
-        //   data: JSON.stringify(cart),
-        //   success: function(res) {
-        //     console.log(res);
-        //     if (res['data'] == 'successful') {
-              
-        //     }
-        //     else {
-        //       alert("Something terrible happened while saving");
-        //     } 
-        //   }
-        // });
+        console.log(JSON.stringify(cart))
+        $.ajax({
+          type: 'POST',
+          url: '/checkout',
+          data: JSON.stringify(cart),
+          dataType: "json",
+          contentType: "application/json; charset=utf-8",
+          success: function(res) {
+            console.log(res);
+            if (res['data'] == 'successful') {
+              $("#c_change").text("");
+              $("#c_tender").val("");
+              $("#checkoutModal").modal('toggle');
+              clearCart();
+            }
+            else {
+              alert("Something terrible happened while saving");
+            } 
+          }
+        });
       });
     });
   });

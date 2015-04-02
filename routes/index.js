@@ -1,8 +1,11 @@
 var express = require('express');
 var router = express.Router();
 var sqlite3 = require('sqlite3').verbose();
-
+var crypto = require('crypto')
 var db = new sqlite3.Database('data/posdb');
+var sha1sum = function(input){
+  return crypto.createHash('sha1').update(input.toString()).digest('hex')
+}
 var tempCatNum = 0;
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -76,6 +79,7 @@ router.get('/getProducts/:option?/:page?/:bar?/:criteria?/:force?',function(req,
   if(username){ //&& (priv == "Admin" || priv == "Manager")
     db.serialize(function(){
       if(filter){
+        var param = {$filter:filter};
         if(!isNaN(filter)){
           //checking id's
           if(forceid){
@@ -83,7 +87,7 @@ router.get('/getProducts/:option?/:page?/:bar?/:criteria?/:force?',function(req,
             query = "SELECT PRODUCT_ID,PRODUCT_BARCODE_SKU, PRODUCT_NAME, CATEGORY_NAME, PRICE,"
                 + " P.CATEGORY_ID FROM PRODUCT P JOIN CATEGORY C ON"
                 + " P.CATEGORY_ID=C.CATEGORY_ID WHERE"
-                + " P.CATEGORY_ID="+filter
+                + " P.CATEGORY_ID=$filter"
                 +" AND DATE_DISCONTINUED IS NULL"
                 + " ORDER BY PRODUCT_NAME ASC";  
           }else{
@@ -91,45 +95,57 @@ router.get('/getProducts/:option?/:page?/:bar?/:criteria?/:force?',function(req,
             query = "SELECT PRODUCT_ID,PRODUCT_BARCODE_SKU, PRODUCT_NAME, CATEGORY_NAME, PRICE,"
                 + " P.CATEGORY_ID FROM PRODUCT P JOIN CATEGORY C ON"
                 + " P.CATEGORY_ID=C.CATEGORY_ID WHERE"
-                + " P.CATEGORY_ID="+filter
+                + " P.CATEGORY_ID=$filter"
                 + " OR P.CATEGORY_ID IN (SELECT CATEGORY_ID FROM CATEGORY WHERE PARENT_CATEGORY_ID="+filter+")"
                 +" AND DATE_DISCONTINUED IS NULL"
-                + " ORDER BY PRODUCT_NAME ASC";            
+                + " ORDER BY PRODUCT_NAME ASC"; 
+            
+
           }
         }else{
           //matching name query
           query = "SELECT PRODUCT_ID,PRODUCT_BARCODE_SKU, PRODUCT_NAME, CATEGORY_NAME, PRICE,"
                 + " P.CATEGORY_ID FROM PRODUCT P JOIN CATEGORY C ON"
                 + " P.CATEGORY_ID=C.CATEGORY_ID WHERE"
-                + " PRODUCT_NAME LIKE '%"+filter+"%'"
+                + " PRODUCT_NAME LIKE ?"
                 +" AND DATE_DISCONTINUED IS NULL"
-                + " ORDER BY PRODUCT_NAME ASC";  
+                + " ORDER BY PRODUCT_NAME ASC"; 
+          var param = "%"+filter+"%"; 
         }
       }else{
         query = "SELECT PRODUCT_ID,PRODUCT_BARCODE_SKU, PRODUCT_NAME, CATEGORY_NAME, PRICE,"
         + " P.CATEGORY_ID FROM PRODUCT P JOIN CATEGORY C ON"
         + " P.CATEGORY_ID=C.CATEGORY_ID WHERE DATE_DISCONTINUED IS NULL"
         + " ORDER BY PRODUCT_NAME ASC";
+        var param = {};
       }
-      db.each(query,function(err,row){
-        var r = [];
-        var price = 0;
-        for(var i in row) {
-          if(price == 4) //price is the 5th column
-            row[i] = row[i]/100;
-          r.push(row[i]);
-          ++price;
+      var stmt = db.prepare(query);
+      console.log(param)
+      console.log(query)
+      stmt.each(param,function(err,row){
+        if(err){
+          console.log(err);
+          //res.json({'data':'failure'});
+        }else{
+          var r = [];
+          var price = 0;
+          for(var i in row) {
+            if(price == 4) //price is the 5th column
+              row[i] = row[i]/100;
+            r.push(row[i]);
+            ++price;
+          }
+         // console.log(r);
+          rows.push(r);
+          //res.json({'data':'successful'});
+          
         }
-       // console.log(r);
-        rows.push(r);
       },function(err){
         if(err){
           console.log(err)
         }else{
-          console.log(this);
+          console.log(this)
         }
-
-        //callback function when all rows are 
         if(option){
           var showBar = true;
           if(bar){
@@ -158,7 +174,8 @@ router.get('/getProducts/:option?/:page?/:bar?/:criteria?/:force?',function(req,
         }else{
           res.render('partials/product_table',{rows:rows});
         }
-      })
+      });
+      stmt.finalize();
     });
   }else{
     res.redirect('login');
@@ -203,86 +220,154 @@ router.post('/update',function(req,res,next){
 router.post('/updateuser',function(req,res,next){
   var username = req.session.username;
   var priv = req.session.privledge;
-  var data = req.body; //id, name,price,category_id,sku
+  var data = req.body;
   console.log(data);
   if(username && (priv == "Admin" || priv == "Manager")){
     var lastAddrId = 0;
     db.serialize(function(){
-     if(data.addrid == ""){
-        var stmt = db.prepare("INSERT INTO ADDRESS (PRODUCT_BARCODE_SKU, "+
-        "CATEGORY_ID,PRODUCT_NAME,PRICE) VALUES ($sku,$cat,$name,$price)");
+     if(data.address_id == ""){
+        var stmt = db.prepare("INSERT INTO ADDRESS (STREET_NUMBER,SUITE_NUMBER,"
+          + "STREET_NAME,STREET_SUFFIX,CITY,PROVINCE,POSTAL_CODE) "
+          + "VALUES ($street_num,$suit_num,$street_name,$suffix,$city,$prov,$postal)");
         var paramsAddr = {
-          $postal:data.postal,
-          $street_num:data.street_num,
-          $street_name:data.street_name,
-          $suit_num:data.suit_num,
-          $suffix:data.suffix,
-          $city:data.city,
-          $prov:data.prov,
-          $addrid:data.addrid
-        };
+          $postal:data.postal,$street_num:data.street_num,$street_name:data.street_name,
+          $suit_num:data.suit_num,$suffix:data.suffix,$city:data.city,$prov:data.prov,};
       }else{
-        var stmt = db.prepare("UPDATE PRODUCT SET PRODUCT_BARCODE_SKU=$sku, "+
-        "CATEGORY_ID=$cat,PRODUCT_NAME=$name,PRICE=$price WHERE PRODUCT_ID=$id");
+        var stmt = db.prepare("UPDATE ADDRESS SET STREET_NUMBER=$street_num, "
+          + "SUITE_NUMBER=$suit_num,STREET_NAME=$street_name,STREET_SUFFIX=$suffix, "
+          + "CITY=$city,PROVINCE=$prov,POSTAL_CODE=$postal WHERE ADDRESS_ID=$addrid");
         var paramsAddr = {
-          $postal:data.postal,
-          $street_num:data.street_num,
-          $street_name:data.street_name,
-          $suit_num:data.suit_num,
-          $suffix:data.suffix,
-          $city:data.city,
-          $prov:data.prov,
-          $addrid:data.addrid
-        };
+          $postal:data.postal,$street_num:data.street_num,$street_name:data.street_name,
+          $suit_num:data.suit_num,$suffix:data.suffix,$city:data.city,$prov:data.prov,
+          $addrid:data.addrid,};
       }
-      stmt.run(param,function(err){
+      console.log(stmt)
+      stmt.run(paramsAddr,function(err){
         if(err){
-          console.log(err);
-          //res.json({'data':'failure'});
+          console.log(err + " in address insert");
+          res.json({'data':'failure'});
         }else{
           //res.json({'data':'successful'});
           console.log(this);
           lastAddrId = this.lastID;
         }
-      });
-      stmt.finalize();
-      //adding employee
-      if(data.emp == ""){
-        var stmt = db.prepare("INSERT INTO EMPLOYEE (PRODUCT_BARCODE_SKU, "+
-        "CATEGORY_ID,PRODUCT_NAME,PRICE) VALUES ($sku,$cat,$name,$price)"); 
-        var paramEmp = {
-          $fname:data.fname,
-          $lname:data.lname,
-          $emp:data.emp,
-          $password:data.password,
-          $wage:data.wage,
-          $sin:data.sin,
-          $job_id:data.job_id,
-          $addrId: lastAddrId
-        };
-      }else{
-        var stmt = db.prepare("UPDATE EMPLOYEE SET PRODUCT_BARCODE_SKU=$sku, "+
-        "CATEGORY_ID=$cat,PRODUCT_NAME=$name,PRICE=$price WHERE PRODUCT_ID=$id");
-        var paramEmp = {
-          $fname:data.fname,
-          $lname:data.lname,
-          $emp:data.emp,
-          $password:data.password,
-          $wage:data.wage,
-          $sin:data.sin,
-          $job_id:data.job_id
-        };
-      }
-      stmt.run(param,function(err){
+      },function(err){
         if(err){
           console.log(err);
           res.json({'data':'failure'});
         }else{
-          res.json({'data':'successful'});
+          //res.json({'data':'successful'});
           console.log(this);
+          lastAddrId = this.lastID;
+          if(data.user_id == ""){
+            var stmt2 = db.prepare("INSERT INTO EMPLOYEE (PASSWORD,EMPlOYEE_NUMBER, "
+              + "JOB_TITLE_ID,ADDRESS_ID,FNAME,LNAME,VACATION_DAYS_LEFT, "
+              + "HOURLY_WAGE,SOCIAL_INSURANCE) VALUES ($password,$emp,$job_id, "
+              + "$addrId,$fname,$lname,30,$wage,$sin)"); 
+            var paramEmp = {$fname:data.fname,$lname:data.lname,$emp:data.emp,
+              $password:sha1sum(data.password),$wage:data.wage,$sin:data.sin,
+              $job_id:data.job_title,$addrId: lastAddrId};
+          }else{
+            var stmt2 = db.prepare("UPDATE EMPLOYEE SET PASSWORD=$password, "
+              + "JOB_TITLE_ID=$job_id,FNAME=$fname,LNAME=$lname,HOURLY_WAGE=$wage, "
+              + "SOCIAL_INSURANCE=$sin WHERE EMPlOYEE_NUMBER=$emp");
+            var paramEmp = {
+              $fname:data.fname,$lname:data.lname,$emp:data.user_id,$password:sha1sum(data.password),
+              $wage:data.wage,$sin:data.sin,$job_id:data.job_title};
+          }
+          console.log(stmt2)
+          stmt2.run(paramEmp,function(err){
+            if(err){
+              console.log(err + " in employee insert");
+              res.json({'data':'failure'});
+            }else{
+              res.json({'data':'successful','id':this.lastID,'change':this.changes});
+              console.log(this);
+            }
+          });
+          stmt2.finalize();
         }
       });
       stmt.finalize();
+    });
+  }else{
+    res.redirect('login');
+  }
+});
+
+router.post('/checkout',function(req,res,next){
+  var username = req.session.username;
+  var priv = req.session.privledge;
+  var data = req.body;
+  console.log(data);
+  if(username && (priv == "Admin" || priv == "Manager")){
+    var lastAddrId = 0;
+    db.serialize(function(){
+     // if(data.address_id == ""){
+     //    var stmt = db.prepare("INSERT INTO ADDRESS (STREET_NUMBER,SUITE_NUMBER,"
+     //      + "STREET_NAME,STREET_SUFFIX,CITY,PROVINCE,POSTAL_CODE) "
+     //      + "VALUES ($street_num,$suit_num,$street_name,$suffix,$city,$prov,$postal)");
+     //    var paramsAddr = {
+     //      $postal:data.postal,$street_num:data.street_num,$street_name:data.street_name,
+     //      $suit_num:data.suit_num,$suffix:data.suffix,$city:data.city,$prov:data.prov,};
+     //  }else{
+     //    var stmt = db.prepare("UPDATE ADDRESS SET STREET_NUMBER=$street_num, "
+     //      + "SUITE_NUMBER=$suit_num,STREET_NAME=$street_name,STREET_SUFFIX=$suffix, "
+     //      + "CITY=$city,PROVINCE=$prov,POSTAL_CODE=$postal WHERE ADDRESS_ID=$addrid");
+     //    var paramsAddr = {
+     //      $postal:data.postal,$street_num:data.street_num,$street_name:data.street_name,
+     //      $suit_num:data.suit_num,$suffix:data.suffix,$city:data.city,$prov:data.prov,
+     //      $addrid:data.addrid,};
+     //  }
+     //  console.log(stmt)
+     //  stmt.run(paramsAddr,function(err){
+     //    if(err){
+     //      console.log(err + " in address insert");
+     //      res.json({'data':'failure'});
+     //    }else{
+     //      //res.json({'data':'successful'});
+     //      console.log(this);
+     //      lastAddrId = this.lastID;
+     //    }
+     //  },function(err){
+     //    if(err){
+     //      console.log(err);
+     //      res.json({'data':'failure'});
+     //    }else{
+     //      //res.json({'data':'successful'});
+     //      console.log(this);
+     //      lastAddrId = this.lastID;
+     //      if(data.user_id == ""){
+     //        var stmt2 = db.prepare("INSERT INTO EMPLOYEE (PASSWORD,EMPlOYEE_NUMBER, "
+     //          + "JOB_TITLE_ID,ADDRESS_ID,FNAME,LNAME,VACATION_DAYS_LEFT, "
+     //          + "HOURLY_WAGE,SOCIAL_INSURANCE) VALUES ($password,$emp,$job_id, "
+     //          + "$addrId,$fname,$lname,30,$wage,$sin)"); 
+     //        var paramEmp = {$fname:data.fname,$lname:data.lname,$emp:data.emp,
+     //          $password:sha1sum(data.password),$wage:data.wage,$sin:data.sin,
+     //          $job_id:data.job_title,$addrId: lastAddrId};
+     //      }else{
+     //        var stmt2 = db.prepare("UPDATE EMPLOYEE SET PASSWORD=$password, "
+     //          + "JOB_TITLE_ID=$job_id,FNAME=$fname,LNAME=$lname,HOURLY_WAGE=$wage, "
+     //          + "SOCIAL_INSURANCE=$sin WHERE EMPlOYEE_NUMBER=$emp");
+     //        var paramEmp = {
+     //          $fname:data.fname,$lname:data.lname,$emp:data.user_id,$password:sha1sum(data.password),
+     //          $wage:data.wage,$sin:data.sin,$job_id:data.job_title};
+     //      }
+     //      console.log(stmt2)
+     //      stmt2.run(paramEmp,function(err){
+     //        if(err){
+     //          console.log(err + " in employee insert");
+     //          res.json({'data':'failure'});
+     //        }else{
+     //          res.json({'data':'successful','id':this.lastID,'change':this.changes});
+     //          console.log(this);
+     //        }
+     //      });
+     //      stmt2.finalize();
+     //    }
+     //  });
+     //  stmt.finalize();
+     res.json({'data':'successful'});
     });
   }else{
     res.redirect('login');

@@ -80,6 +80,14 @@ $(document).ready(function () {
           console.log(res);
           if (res['data'] == 'successful') {
             getUsers();
+            var message = "";
+            if(res['change'] != 0 ){
+              message = "Update successful";
+            }
+            if(res['id'] != 0){
+              message = "Your new user's id is " +res['id'];
+            }
+            alert(message);
           }
           else {
             alert("Something terrible happened while saving");
