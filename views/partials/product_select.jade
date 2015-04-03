@@ -1,3 +1,4 @@
+- var p = pages;
 -if(showbar)
   div.row.productList
     each val in rows
@@ -11,8 +12,9 @@
         button.resultButton.product(data-id=val[0],data-cat=val[5],
           data-price=val[4],data-name=val[2],data-sku=val[1],
           onClick="this.blur();")=val[2]
-- if(pages > 1 && showbar)
-  div.row
+    input(type="hidden",id="nmPage",value=pages)
+- if((p > 1) && showbar)
+  div.row.btnGroupNextPrev
     div.col-xs-6.col-sm-6.no-gutter
       button.resultButton(id="prevPage",onClick="this.blur();") Prev Page
     div.col-xs-6.col-sm-6.no-gutter

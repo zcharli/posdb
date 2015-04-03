@@ -359,3 +359,8 @@ a {
 #mainHr{
   margin: 1.1em auto;
 }
+
+.dataTables_filter {
+  padding-right:10px;
+  float:right;
+}

@@ -155,6 +155,7 @@ router.get('/getProducts/:option?/:page?/:bar?/:criteria?/:force?',function(req,
           var maxProd = option*6; //maximum products per page
           var totalRows = rows.length;
           var maxPage = Math.ceil(totalRows/maxProd);
+
           end = rows.length;
           start = start+page*maxProd;
           if(end - maxProd > 0){
@@ -166,7 +167,10 @@ router.get('/getProducts/:option?/:page?/:bar?/:criteria?/:force?',function(req,
             pageEnd = end;
             rows = rows.splice(start,end);
           }
-
+          console.log("setting max page:"+maxPage+ " from "+totalRows/maxProd)
+          res.header("Cache-Control", "no-cache, no-store");
+          res.header("Pragma", "no-cache");
+          res.header("Expires", 0);
           res.render('partials/product_select', {rows:rows,
             pages:maxPage,shownext:page!=maxPage-1,showprev:start!=0,
             showbar:showBar});
@@ -300,8 +304,47 @@ router.post('/checkout',function(req,res,next){
   var data = req.body;
   console.log(data);
   if(username && (priv == "Admin" || priv == "Manager")){
-    var lastAddrId = 0;
+    var lastTransId = 0;
+    var subtotal = 0;
+    var itemsSold = 0;
+    var queryTransaction = [];
     db.serialize(function(){
+      for(var i=0;i<data.length;++i){
+        subtotal += data[i].quantity * data[i].price;
+        itemsSold += data[i].quantity;
+      }
+      var query = "INSERT INTO SALE_TRANSACTION("
+        + "EMPlOYEE_NUMBER,ITEM_TOTAL,TAX,TOTAL_SUM) VALUES "
+        + "($user_id,$total,$tax,$sum)";
+      var params = {$user_id:req.session.user_id,$total:itemsSold
+        $tax:subtotal*0.13,$sum:subtotal*1.13};
+      var stmt = db.prepare(query);
+      stmt.run(params,function(err){
+        if(err){
+          console.log(err)
+        }else{
+          lastTransId = this.lastID;
+        }
+      },function(err){
+        if(err){
+          console.log(err)
+        }
+        var query = "INSERT INTO SALE_DETAILS (SALE_TRANSACTION_ID,"
+          + "PRODUCT_ID,DISCOUNTED,FINAL_PRICE,QUANTITY_BOUGHT) VALUES "
+          + "($tranId,$pid,0,$price,$quant)";
+        var stmt2 = db.prepare(query);
+        for(var i = 0;i<data.length;++i){
+          var params = {$transId:lastTransId,$pid:data[i].id,$price:data[i].price,
+            $quant:data[i].quantity};
+          stmt2.run(params,function(err){
+            if(err){
+              console.log(err)
+            }
+          });
+        }
+        stmt2.finalize();
+      });
+      stmt.finalize();
      // if(data.address_id == ""){
      //    var stmt = db.prepare("INSERT INTO ADDRESS (STREET_NUMBER,SUITE_NUMBER,"
      //      + "STREET_NAME,STREET_SUFFIX,CITY,PROVINCE,POSTAL_CODE) "
@@ -534,14 +577,42 @@ router.post('/delete/:table', function(req, res, next) {
 
 router.post('/signin', function(req, res, next) {
   var username = req.body.username;
-  var pass = req.body.password;
+  var pass = sha1sum(req.body.password);
   // test password
   //then
-  var priv = "Admin";
-  req.session.username = username;
-  req.session.privledge = priv;
-  res.redirect("/");
-
+  if(!username || !pass){
+    res.render('login', { error:"Login unsuccessful" });
+  }else{
+    var user_id = username.match(/\d+/)[0];
+    console.log(user_id)
+    db.serialize(function(){
+      var stmt = db.prepare("SELECT FNAME,LNAME,"
+        + "J.JOB_TITLE_NAME FROM EMPLOYEE E JOIN JOB_TITLE J ON "
+        + "J.JOB_TITLE_ID=E.JOB_TITLE_ID WHERE EMPLOYEE_NUMBER=$id "
+        + "AND PASSWORD=$password");
+      var param = {$id:user_id, $password:pass};
+      console.log(pass)
+      stmt.each(param,function(err,row){
+        if(err){
+          console.log(err);
+          res.render('login', { error:"Login unsuccessful" });
+        }else{
+          console.log(this);
+          console.log(row)
+          if(row){
+            req.session.username = row.fname+" "+row.lname;
+            req.session.user_id = user_id;
+            req.session.privledge = row.job_title_name;
+            res.redirect("/");
+            console.log(this);
+          }else{
+            res.render('login', { error:"Login unsuccessful" });
+          }
+        }
+      });
+      stmt.finalize();
+    });  
+  } 
 });
 
 module.exports = router;

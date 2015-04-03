@@ -5,8 +5,13 @@ block content
   div.login
     div.title Login to your account
     form(action='/signin',method='post')
-
       div.input
+        -if(error)
+          div.alert.alert-danger(role="alert")
+            span.glyphicon.glyphicon-exclamation-sign(aria-hidden="true")
+              span.sr-only Error
+
+              |Login Unsuccessful
         div.icon
           i(class="fa fa-user")
         input(placeholder="employee number", type="text", name="username")
@@ -15,4 +20,4 @@ block content
           div.icon
             i(class="fa fa-lock")
           input(placeholder="password", type="password", name="password")
-      input.submit(type='submit', name='btnSubmit',id='btnSubmit')
+      input.btn.btn-primary.purchButton(type='submit', name='btnSubmit',id='btnSubmit')

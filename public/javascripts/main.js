@@ -93,6 +93,9 @@ $(function(){
         $(".productList").empty();
         $(".productList").append(data);
         addProductHandlers();
+        if($("#nmPage").val() <= 1){
+          $(".btnGroupNextPrev").remove();
+        }
       });
     }
   }
@@ -103,6 +106,9 @@ $(function(){
         $(".productList").empty();
         $(".productList").append(data);
         addProductHandlers();
+        if($("#nmPage").val() <= 1){
+          $(".btnGroupNextPrev").remove();
+        }
       });
     }
   }
