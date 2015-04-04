@@ -302,114 +302,74 @@ router.post('/checkout',function(req,res,next){
   var username = req.session.username;
   var priv = req.session.privledge;
   var data = req.body;
-  console.log(data);
+  //console.log(data);
   if(username && (priv == "Admin" || priv == "Manager")){
-    var lastTransId = 0;
     var subtotal = 0;
     var itemsSold = 0;
     var queryTransaction = [];
+    for(var i=0;i<data.length;++i){
+      subtotal += data[i].quantity * data[i].price;
+      itemsSold += data[i].quantity;
+    }
     db.serialize(function(){
-      for(var i=0;i<data.length;++i){
-        subtotal += data[i].quantity * data[i].price;
-        itemsSold += data[i].quantity;
-      }
-      var query = "INSERT INTO SALE_TRANSACTION("
+      var lastTransId = 0;
+      var query = "INSERT INTO SALE_TRANSACTION ("
         + "EMPlOYEE_NUMBER,ITEM_TOTAL,TAX,TOTAL_SUM) VALUES "
         + "($user_id,$total,$tax,$sum)";
-      var params = {$user_id:req.session.user_id,$total:itemsSold
-        $tax:subtotal*0.13,$sum:subtotal*1.13};
+      var params = {$user_id:req.session.user_id,$total:itemsSold,
+        $tax:((subtotal*0.13).toFixed(2))*100,$sum:((subtotal*1.13).toFixed(2))*100};
       var stmt = db.prepare(query);
       stmt.run(params,function(err){
+        console.log("running transaction insert")
         if(err){
           console.log(err)
+          console.log("sending failure transaction")
+
+          res.json({'data':'failure'});
         }else{
           lastTransId = this.lastID;
         }
+        console.log(this);
       },function(err){
         if(err){
           console.log(err)
+          console.log("sending failure after transaction")
+
+          res.json({'data':'failure'});
         }
-        var query = "INSERT INTO SALE_DETAILS (SALE_TRANSACTION_ID,"
+        lastTransId = this.lastID;
+        console.log(lastTransId)
+        var query2 = "INSERT INTO SALE_DETAILS (SALE_TRANSACTION_ID,"
           + "PRODUCT_ID,DISCOUNTED,FINAL_PRICE,QUANTITY_BOUGHT) VALUES "
           + "($tranId,$pid,0,$price,$quant)";
-        var stmt2 = db.prepare(query);
+        var stmt2 = db.prepare(query2);
+        var queryCount = 0;
         for(var i = 0;i<data.length;++i){
-          var params = {$transId:lastTransId,$pid:data[i].id,$price:data[i].price,
+          var params2 = {$tranId:lastTransId,$pid:data[i].id,$price:Number(data[i].price*100),
             $quant:data[i].quantity};
-          stmt2.run(params,function(err){
+          stmt2.run(params2,function(err){
+          console.log("running sale detail insert")
             if(err){
               console.log(err)
+              console.log("sending failure detail")
+              res.json({'data':'failure'});
+            }
+            console.log(this)
+          },function(){
+            console.log("detail query finished")
+            queryCount++;
+            if(queryCount == data.length){
+              console.log("sending success at" + query)
+              res.json({'data':'successful'});
             }
           });
         }
         stmt2.finalize();
+        console.log(this)
+        //console.log("sending success")
+        //res.json({'data':'successful'});
       });
       stmt.finalize();
-     // if(data.address_id == ""){
-     //    var stmt = db.prepare("INSERT INTO ADDRESS (STREET_NUMBER,SUITE_NUMBER,"
-     //      + "STREET_NAME,STREET_SUFFIX,CITY,PROVINCE,POSTAL_CODE) "
-     //      + "VALUES ($street_num,$suit_num,$street_name,$suffix,$city,$prov,$postal)");
-     //    var paramsAddr = {
-     //      $postal:data.postal,$street_num:data.street_num,$street_name:data.street_name,
-     //      $suit_num:data.suit_num,$suffix:data.suffix,$city:data.city,$prov:data.prov,};
-     //  }else{
-     //    var stmt = db.prepare("UPDATE ADDRESS SET STREET_NUMBER=$street_num, "
-     //      + "SUITE_NUMBER=$suit_num,STREET_NAME=$street_name,STREET_SUFFIX=$suffix, "
-     //      + "CITY=$city,PROVINCE=$prov,POSTAL_CODE=$postal WHERE ADDRESS_ID=$addrid");
-     //    var paramsAddr = {
-     //      $postal:data.postal,$street_num:data.street_num,$street_name:data.street_name,
-     //      $suit_num:data.suit_num,$suffix:data.suffix,$city:data.city,$prov:data.prov,
-     //      $addrid:data.addrid,};
-     //  }
-     //  console.log(stmt)
-     //  stmt.run(paramsAddr,function(err){
-     //    if(err){
-     //      console.log(err + " in address insert");
-     //      res.json({'data':'failure'});
-     //    }else{
-     //      //res.json({'data':'successful'});
-     //      console.log(this);
-     //      lastAddrId = this.lastID;
-     //    }
-     //  },function(err){
-     //    if(err){
-     //      console.log(err);
-     //      res.json({'data':'failure'});
-     //    }else{
-     //      //res.json({'data':'successful'});
-     //      console.log(this);
-     //      lastAddrId = this.lastID;
-     //      if(data.user_id == ""){
-     //        var stmt2 = db.prepare("INSERT INTO EMPLOYEE (PASSWORD,EMPlOYEE_NUMBER, "
-     //          + "JOB_TITLE_ID,ADDRESS_ID,FNAME,LNAME,VACATION_DAYS_LEFT, "
-     //          + "HOURLY_WAGE,SOCIAL_INSURANCE) VALUES ($password,$emp,$job_id, "
-     //          + "$addrId,$fname,$lname,30,$wage,$sin)"); 
-     //        var paramEmp = {$fname:data.fname,$lname:data.lname,$emp:data.emp,
-     //          $password:sha1sum(data.password),$wage:data.wage,$sin:data.sin,
-     //          $job_id:data.job_title,$addrId: lastAddrId};
-     //      }else{
-     //        var stmt2 = db.prepare("UPDATE EMPLOYEE SET PASSWORD=$password, "
-     //          + "JOB_TITLE_ID=$job_id,FNAME=$fname,LNAME=$lname,HOURLY_WAGE=$wage, "
-     //          + "SOCIAL_INSURANCE=$sin WHERE EMPlOYEE_NUMBER=$emp");
-     //        var paramEmp = {
-     //          $fname:data.fname,$lname:data.lname,$emp:data.user_id,$password:sha1sum(data.password),
-     //          $wage:data.wage,$sin:data.sin,$job_id:data.job_title};
-     //      }
-     //      console.log(stmt2)
-     //      stmt2.run(paramEmp,function(err){
-     //        if(err){
-     //          console.log(err + " in employee insert");
-     //          res.json({'data':'failure'});
-     //        }else{
-     //          res.json({'data':'successful','id':this.lastID,'change':this.changes});
-     //          console.log(this);
-     //        }
-     //      });
-     //      stmt2.finalize();
-     //    }
-     //  });
-     //  stmt.finalize();
-     res.json({'data':'successful'});
     });
   }else{
     res.redirect('login');

@@ -266,8 +266,8 @@ $(function(){
     });
   }
   var numBtn = Math.floor((vHeight - 120 - 75)/75);
-  console.log(Math.floor((vHeight - 120)/75))
-  console.log(numCategory)
+  //console.log(Math.floor((vHeight - 120)/75))
+  //console.log(numCategory)
 
   getCategoryPane();
   getProductPane();
@@ -290,28 +290,33 @@ $(function(){
           $('#btnFinalize').attr('disabled','disabled');
         }
       });
-      $("#btnFinalize").click(function(){
+      $("#btnFinalize").unbind().bind('click',function(){
         e.preventDefault();
-        console.log(JSON.stringify(cart))
-        $.ajax({
-          type: 'POST',
-          url: '/checkout',
-          data: JSON.stringify(cart),
-          dataType: "json",
-          contentType: "application/json; charset=utf-8",
-          success: function(res) {
-            console.log(res);
-            if (res['data'] == 'successful') {
-              $("#c_change").text("");
-              $("#c_tender").val("");
-              $("#checkoutModal").modal('toggle');
-              clearCart();
+        //console.log(JSON.stringify(cart))
+        console.log("ajax finalize !")
+        if(cart.length > 0){
+          $.ajax({
+            type: 'POST',
+            url: '/checkout',
+            data: JSON.stringify(cart),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function(res) {
+              console.log(res);
+              if (res['data'] == 'successful') {
+                $("#c_change").text("");
+                $("#c_tender").val("");
+                $("#checkoutModal").modal('toggle');
+                clearCart();
+              }
+              else {
+                alert("Something terrible happened while saving");
+              } 
             }
-            else {
-              alert("Something terrible happened while saving");
-            } 
-          }
-        });
+          });
+        }
+        e.stopPropagation();
+        return false;
       });
     });
   });
