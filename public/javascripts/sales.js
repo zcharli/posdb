@@ -1,7 +1,7 @@
 $(document).ready(function() {
   var dateToday = new Date();
   var currDate = dateToday.getDate();
-  var currMonth = dateToday.getMonth();
+  var currMonth = dateToday.getMonth() + 1;
   var currYear = dateToday.getFullYear();
   var dateStr = currYear + "-" + currMonth + "-" + currDate;
   var dp = $("#datepicker");
@@ -15,9 +15,9 @@ $(document).ready(function() {
     $(".sale_row").click(function(e){
       var transID = $(this).data().transid;
       alert(transID)
-      // $.get("/getSalesDetails/+transID",function(date){
-      //   populateDetails(data)
-      // });
+      $.get("/getSalesDetails/+transID",function(data){
+        populateDetails(data)
+      });
     });
   }
 
@@ -32,7 +32,7 @@ $(document).ready(function() {
       currYear = split[0];
       currMonth = split[1];
       currDate = split[2];
-      console.log("all")
+      console.log(currMonth)
       getSales(currYear,currMonth,currDate);
   });
 
@@ -48,16 +48,28 @@ $(document).ready(function() {
       getSales(currYear);
   });
 
+  var getFormattedDateSQL = function(date) {
+    var year = date.getFullYear();
+    var month = (1 + date.getMonth()).toString();
+    month = month.length > 1 ? month : '0' + month;
+    var day = date.getDate().toString();
+    day = day.length > 1 ? day : '0' + day;
+    return year + '/' + month + '/' + day;
+  }
+
   var getSales = function(year,month,day){
     var q = "/getSales";
     if(!year){
-      q += "/"+currYear + "/" + currMonth + "/" + currDate;
+      q += "/"+getFormattedDateSQL(dateToday);
     }else{
       q += "/"+currYear;
-      if(month) {q+="/"+month;}
+      if(month) {
+        month = month.length > 1 ? month : '0' + month;
+        q+="/"+month;
+      }
       if(day) {q+="/"+day;}
     }
-    //console.log(q)
+    console.log(q)
     $.get(q,function(data){
       saleTable.empty();
       saleTable.append(data);

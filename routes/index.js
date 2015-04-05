@@ -134,10 +134,7 @@ router.get('/getProducts/:option?/:page?/:bar?/:criteria?/:force?',function(req,
             r.push(row[i]);
             ++price;
           }
-         // console.log(r);
           rows.push(r);
-          //res.json({'data':'successful'});
-          
         }
       },function(err){
         if(err){
@@ -199,29 +196,33 @@ router.get('/getSales/:year/:month?/:day?',function(req,res,next){
       if(day && month && year){//if there is a day, eveverything else assumed to exist
         query = "SELECT SALE_TRANSACTION_ID,FNAME,LNAME,TOTAL_SUM,TAX,ITEM_TOTAL,"
                 + "DATETIME_SOLD FROM SALE_TRANSACTION S JOIN EMPLOYEE E ON "
-                + " S.EMPlOYEE_NUMBER=E.EMPLOYEE_NUMBER WHERE "
-                + "strftime('%Y-%m-%d',DATETIME_SOLD)='$date' ORDER BY DATETIME_SOLD ASC";
-        params = {$date:year+"-"+month+"-"+day};
+                + "S.EMPlOYEE_NUMBER=E.EMPLOYEE_NUMBER WHERE "
+                + "strftime('%Y-%m-%d',DATETIME_SOLD)=? ORDER BY DATETIME_SOLD ASC";
+        params = year+"-"+month+"-"+day;
       }else if(month && year){//otherwise
         query = "SELECT SALE_TRANSACTION_ID,FNAME,LNAME,TOTAL_SUM,TAX,ITEM_TOTAL,"
                 + "DATETIME_SOLD FROM SALE_TRANSACTION S JOIN EMPLOYEE E ON "
-                + " S.EMPlOYEE_NUMBER=E.EMPLOYEE_NUMBER WHERE "
-                + "strftime('%Y-%m',DATETIME_SOLD)='$monthyear' "
-                + " ORDER BY DATETIME_SOLD ASC";
-        params = {$monthyear:year+"-"+month};
+                + "S.EMPlOYEE_NUMBER=E.EMPLOYEE_NUMBER WHERE "
+                + "strftime('%Y-%m',DATETIME_SOLD)=? "
+                + "ORDER BY DATETIME_SOLD ASC";
+        params = year+"-"+month;
       }else{
         query = "SELECT SALE_TRANSACTION_ID,FNAME,LNAME,TOTAL_SUM,TAX,ITEM_TOTAL,"
                 + "DATETIME_SOLD FROM SALE_TRANSACTION S JOIN EMPLOYEE E ON "
-                + " S.EMPlOYEE_NUMBER=E.EMPLOYEE_NUMBER WHERE "
-                + "strftime('%Y',DATETIME_SOLD)='$year' ORDER BY DATETIME_SOLD ASC";
-        params = {$year:year};
+                + "S.EMPlOYEE_NUMBER=E.EMPLOYEE_NUMBER WHERE "
+                + "strftime('%Y',DATETIME_SOLD)=? ORDER BY DATETIME_SOLD ASC";
+        params = year;
       }
       var stmt = db.prepare(query);
+      console.log(params)
       stmt.each(params,function(err,row){
         if(err){
           console.log(err);
           //res.json({'data':'failure'});
         }else{
+          console.log(row)
+          console.log("hello")
+
           var r = [];
           var price = 0;
           for(var i in row) {
@@ -231,17 +232,65 @@ router.get('/getSales/:year/:month?/:day?',function(req,res,next){
             ++price;
           }
           rows.push(r);
-          console.log(rows)
         }
       },function(err){
           if(err){
             console.log(er)
           }else{
             console.log(this)
+            console.log("Query finished")
           }
           res.render('partials/sales_table',{rows:rows});
+      });
+      stmt.finalize();
+    });
+  }else{
+    res.redirect('login');
+  }
+});
+
+router.get('/getSalesDetails/:id',function(req,res,next){
+  var username = req.session.username;
+  var priv = req.session.privledge;
+  var id = req.params.id;
+  var rows = [];
+  var query;
+  if(username && priv == "Admin" || priv == "Manager"){
+    db.serialize(function(){
+      query = "SELECT PRODUCT_NAME,PRODUCT_BARCODE_SKU,CATEGORY_NAME,"
+        + "FINAL_PRICE,QUANTITY_BOUGHT FROM SALE_DETAILS S JOIN PRODUCT P ON "
+        + "S.PRODUCT_ID=P.PRODUCT_ID JOIN CATEGORY C ON C.CATEGORY_ID=P.CATEGORY_ID "
+        + "WHERE SALE_TRANSACTION_ID=? ORDER BY QUANTITY_BOUGHT DESC";
+      var stmt = db.prepare(query);
+      console.log(id)
+      stmt.each(id,function(err,row){
+        if(err){
+          console.log(err);
+          //res.json({'data':'failure'});
+        }else{
+          console.log(row)
+          console.log("hello")
+
+          var r = [];
+          var price = 0;
+          for(var i in row) {
+            if(price == 3) //sum and tax needed
+              row[i] = row[i]/100;
+            r.push(row[i]);
+            ++price;
+          }
+          rows.push(r);
         }
-      );
+      },function(err){
+          if(err){
+            console.log(er)
+          }else{
+            console.log(this)
+            console.log("Query finished")
+          }
+          res.render('partials/sale_details',{rows:rows});
+      });
+      stmt.finalize();
     });
   }else{
     res.redirect('login');
