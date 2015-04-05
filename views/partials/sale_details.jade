@@ -1,0 +1,9 @@
+ul.list-group
+- if (rows.length == 0)
+    li.list-group-item No details on this sale
+- else
+    - for(var i=0;i<rows.length;++i)
+      li.list-group-item
+        span.badge #{rows[i][4]} @ $#{rows[i][3]}
+        |#{rows[i][0]} (#{rows[i][2]}) 
+        b #{rows[i][1]}

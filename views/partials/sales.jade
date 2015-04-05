@@ -16,19 +16,19 @@ div.row
               h3.box__header-title Sales Data
             div.box__body
               div.stats.stats--main
-                div.stats__amount 100.00
-                div.stats_caption sales today
+                div.stats__amount#s_today
+                div.stats_caption current period
                 //- div.stats__change
                 //-   div.stats__value.stats_value--positive + 6%
                 //-   div.stats__period this week
               div.stats
-                div.stats__amount 100.00
-                div.stats_caption sales this month
+                div.stats__amount#s_month
+                div.stats_caption tax current period
                 //- div.stats__change
                 //-   div.stats__value.stats_value--negative + 6%
                 //-   div.stats__period this week
               div.stats
-                div.stats__amount 100.00
+                div.stats__amount#s_sold
                 div.stats_caption items sold in period
                 //- div.stats__change
                 //-   div.stats__value.stats_value nothing
@@ -36,7 +36,7 @@ div.row
 
       div.col-md-9
         div.row
-          h4#month(style="font-weight:bold;text-align:center;")  April
+          h4#resultDate(style="font-weight:bold;text-align:center;")
         div.row
           div.sales_table_div(style="margin-left:10px")
   div.no-guter.col-md-4

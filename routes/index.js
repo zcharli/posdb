@@ -182,10 +182,11 @@ router.get('/getProducts/:option?/:page?/:bar?/:criteria?/:force?',function(req,
   }
 });
 
-router.get('/getSales/:year/:month?/:day?',function(req,res,next){
+router.get('/getSales/:num/:year/:month?/:day?',function(req,res,next){
   var username = req.session.username;
   var priv = req.session.privledge;
   var year = req.params.year;
+  var num = req.params.num;
   var month = req.params.month;
   var day = req.params.day;
   var rows = [];
@@ -193,24 +194,21 @@ router.get('/getSales/:year/:month?/:day?',function(req,res,next){
   var params;
   if(username && priv == "Admin" || priv == "Manager"){
     db.serialize(function(){
-      if(day && month && year){//if there is a day, eveverything else assumed to exist
-        query = "SELECT SALE_TRANSACTION_ID,FNAME,LNAME,TOTAL_SUM,TAX,ITEM_TOTAL,"
-                + "DATETIME_SOLD FROM SALE_TRANSACTION S JOIN EMPLOYEE E ON "
-                + "S.EMPlOYEE_NUMBER=E.EMPLOYEE_NUMBER WHERE "
-                + "strftime('%Y-%m-%d',DATETIME_SOLD)=? ORDER BY DATETIME_SOLD ASC";
-        params = year+"-"+month+"-"+day;
-      }else if(month && year){//otherwise
-        query = "SELECT SALE_TRANSACTION_ID,FNAME,LNAME,TOTAL_SUM,TAX,ITEM_TOTAL,"
-                + "DATETIME_SOLD FROM SALE_TRANSACTION S JOIN EMPLOYEE E ON "
-                + "S.EMPlOYEE_NUMBER=E.EMPLOYEE_NUMBER WHERE "
-                + "strftime('%Y-%m',DATETIME_SOLD)=? "
-                + "ORDER BY DATETIME_SOLD ASC";
-        params = year+"-"+month;
+      if(num==1){
+        query = "SELECT SUM(TOTAL_SUM),SUM(TAX),SUM(ITEM_TOTAL) FROM SALE_TRANSACTION WHERE ";
       }else{
         query = "SELECT SALE_TRANSACTION_ID,FNAME,LNAME,TOTAL_SUM,TAX,ITEM_TOTAL,"
                 + "DATETIME_SOLD FROM SALE_TRANSACTION S JOIN EMPLOYEE E ON "
-                + "S.EMPlOYEE_NUMBER=E.EMPLOYEE_NUMBER WHERE "
-                + "strftime('%Y',DATETIME_SOLD)=? ORDER BY DATETIME_SOLD ASC";
+                + "S.EMPlOYEE_NUMBER=E.EMPLOYEE_NUMBER WHERE ";
+      }
+      if(day && month && year){//if there is a day, eveverything else assumed to exist
+        query += "strftime('%Y-%m-%d',DATETIME_SOLD)=? ORDER BY DATETIME_SOLD ASC";
+        params = year+"-"+month+"-"+day;
+      }else if(month && year){//otherwise
+        query += "strftime('%Y-%m',DATETIME_SOLD)=? ORDER BY DATETIME_SOLD ASC";
+        params = year+"-"+month;
+      }else{
+        query += "strftime('%Y',DATETIME_SOLD)=? ORDER BY DATETIME_SOLD ASC";
         params = year;
       }
       var stmt = db.prepare(query);
@@ -220,27 +218,32 @@ router.get('/getSales/:year/:month?/:day?',function(req,res,next){
           console.log(err);
           //res.json({'data':'failure'});
         }else{
-          console.log(row)
-          console.log("hello")
-
-          var r = [];
-          var price = 0;
-          for(var i in row) {
-            if(price == 3 || price == 4) //sum and tax needed
-              row[i] = row[i]/100;
-            r.push(row[i]);
-            ++price;
+          if(num==0){
+            var r = [];
+            var price = 0;
+            for(var i in row) {
+              if(price == 3 || price == 4) //sum and tax needed
+                row[i] = row[i]/100;
+              r.push(row[i]);
+              ++price;
+            }
+            rows.push(r);
+          }else{
+            rows = {"sum":row["SUM(TOTAL_SUM)"]/100,"tax":row["SUM(TAX)"]/100,"quant":row["SUM(ITEM_TOTAL)"/100]};
           }
-          rows.push(r);
         }
       },function(err){
           if(err){
             console.log(er)
           }else{
             console.log(this)
-            console.log("Query finished")
           }
-          res.render('partials/sales_table',{rows:rows});
+          if(num==0){
+            res.render('partials/sales_table',{rows:rows});
+          }else{
+            console.log(rows)
+            res.send(rows);
+          }
       });
       stmt.finalize();
     });
@@ -260,22 +263,20 @@ router.get('/getSalesDetails/:id',function(req,res,next){
       query = "SELECT PRODUCT_NAME,PRODUCT_BARCODE_SKU,CATEGORY_NAME,"
         + "FINAL_PRICE,QUANTITY_BOUGHT FROM SALE_DETAILS S JOIN PRODUCT P ON "
         + "S.PRODUCT_ID=P.PRODUCT_ID JOIN CATEGORY C ON C.CATEGORY_ID=P.CATEGORY_ID "
-        + "WHERE SALE_TRANSACTION_ID=? ORDER BY QUANTITY_BOUGHT DESC";
+        + "WHERE SALE_TRANSACTION_ID=$id ORDER BY QUANTITY_BOUGHT DESC";
+      var param = {$id:Number(id)};
       var stmt = db.prepare(query);
-      console.log(id)
-      stmt.each(id,function(err,row){
+      console.log(param)
+      stmt.each(param,function(err,row){
         if(err){
           console.log(err);
-          //res.json({'data':'failure'});
         }else{
-          console.log(row)
-          console.log("hello")
-
           var r = [];
           var price = 0;
           for(var i in row) {
-            if(price == 3) //sum and tax needed
+            if(price == 3) {//sum and tax needed
               row[i] = row[i]/100;
+            }
             r.push(row[i]);
             ++price;
           }
@@ -286,7 +287,7 @@ router.get('/getSalesDetails/:id',function(req,res,next){
             console.log(er)
           }else{
             console.log(this)
-            console.log("Query finished")
+            console.log(rows)
           }
           res.render('partials/sale_details',{rows:rows});
       });
