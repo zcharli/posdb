@@ -1,0 +1,25 @@
+script(type='text/javascript' src='javascripts/sales_table.js')
+table#sales_table.table.table-hover.table-bordered
+  thead
+    th Transaction ID
+    th Sale Maker
+    th Sale Sum
+    th Sale tax
+    th Items Sold
+    th Date Sold
+  tfoot
+    th Transaction ID
+    th Sale Maker
+    th Sale Sum
+    th Sale tax
+    th Items Sold
+    th Date Sold
+  tbody
+    - for(var i=0; i <rows.length;++i)
+      tr(class="sale_row",data-transid=rows[i][0])
+        td=rows[i][0]
+        td=rows[i][1]+" "+rows[i][2]
+        td=rows[i][3]
+        td=rows[i][4]
+        td=rows[i][5]
+        td=rows[i][6]

@@ -119,8 +119,8 @@ router.get('/getProducts/:option?/:page?/:bar?/:criteria?/:force?',function(req,
         var param = {};
       }
       var stmt = db.prepare(query);
-      console.log(param)
-      console.log(query)
+      //console.log(param)
+      //console.log(query)
       stmt.each(param,function(err,row){
         if(err){
           console.log(err);
@@ -179,6 +179,69 @@ router.get('/getProducts/:option?/:page?/:bar?/:criteria?/:force?',function(req,
         }
       });
       stmt.finalize();
+    });
+  }else{
+    res.redirect('login');
+  }
+});
+
+router.get('/getSales/:year/:month?/:day?',function(req,res,next){
+  var username = req.session.username;
+  var priv = req.session.privledge;
+  var year = req.params.year;
+  var month = req.params.month;
+  var day = req.params.day;
+  var rows = [];
+  var query;
+  var params;
+  if(username && priv == "Admin" || priv == "Manager"){
+    db.serialize(function(){
+      if(day && month && year){//if there is a day, eveverything else assumed to exist
+        query = "SELECT SALE_TRANSACTION_ID,FNAME,LNAME,TOTAL_SUM,TAX,ITEM_TOTAL,"
+                + "DATETIME_SOLD FROM SALE_TRANSACTION S JOIN EMPLOYEE E ON "
+                + " S.EMPlOYEE_NUMBER=E.EMPLOYEE_NUMBER WHERE "
+                + "strftime('%Y-%m-%d',DATETIME_SOLD)='$date' ORDER BY DATETIME_SOLD ASC";
+        params = {$date:year+"-"+month+"-"+day};
+      }else if(month && year){//otherwise
+        query = "SELECT SALE_TRANSACTION_ID,FNAME,LNAME,TOTAL_SUM,TAX,ITEM_TOTAL,"
+                + "DATETIME_SOLD FROM SALE_TRANSACTION S JOIN EMPLOYEE E ON "
+                + " S.EMPlOYEE_NUMBER=E.EMPLOYEE_NUMBER WHERE "
+                + "strftime('%Y-%m',DATETIME_SOLD)='$monthyear' "
+                + " ORDER BY DATETIME_SOLD ASC";
+        params = {$monthyear:year+"-"+month};
+      }else{
+        query = "SELECT SALE_TRANSACTION_ID,FNAME,LNAME,TOTAL_SUM,TAX,ITEM_TOTAL,"
+                + "DATETIME_SOLD FROM SALE_TRANSACTION S JOIN EMPLOYEE E ON "
+                + " S.EMPlOYEE_NUMBER=E.EMPLOYEE_NUMBER WHERE "
+                + "strftime('%Y',DATETIME_SOLD)='$year' ORDER BY DATETIME_SOLD ASC";
+        params = {$year:year};
+      }
+      var stmt = db.prepare(query);
+      stmt.each(params,function(err,row){
+        if(err){
+          console.log(err);
+          //res.json({'data':'failure'});
+        }else{
+          var r = [];
+          var price = 0;
+          for(var i in row) {
+            if(price == 3 || price == 4) //sum and tax needed
+              row[i] = row[i]/100;
+            r.push(row[i]);
+            ++price;
+          }
+          rows.push(r);
+          console.log(rows)
+        }
+      },function(err){
+          if(err){
+            console.log(er)
+          }else{
+            console.log(this)
+          }
+          res.render('partials/sales_table',{rows:rows});
+        }
+      );
     });
   }else{
     res.redirect('login');

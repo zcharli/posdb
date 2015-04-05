@@ -364,3 +364,8 @@ a {
   padding-right:10px;
   float:right;
 }
+
+.datepicker.datepicker-inline {
+  display:block !important;
+  width:100% !important;
+}
