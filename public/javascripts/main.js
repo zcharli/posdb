@@ -44,7 +44,7 @@ $(function(){
       getProductPane();
     }else{
       console.log("get")
-      $.get("/getProducts/"+numBtn+"/"+currPage+"/bar/"+$("#search_me").val(),function(data){
+      $.get("/getProducts/"+numBtn+"/"+currPage+"/bar/"+"s-"+$("#search_me").val(),function(data){
         $(".productList").empty();
         $(".productList").append(data);
         addProductHandlers();

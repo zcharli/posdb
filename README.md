@@ -1,14 +1,14 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
-The following code needs to be run:
+Thanks for taking the chance to view my Node POS program made for my database project in COMP 3005 at Carleton University for the winter semester of 2014 (in 2015). This read me is meant to get the project up and running. 
+
 
 ```
 #!javascript
 
 npm install
 ```
-If you get a sqlite3 error, then run this command after
+Just be safe, type in the following command or if you get a sqlite3 error, then run this command after
 
 
 ```
@@ -21,26 +21,4 @@ npm install connect-sqlite3
 
 ### What is this repository for? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+There is a 

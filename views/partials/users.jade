@@ -1,7 +1,10 @@
 script(type='text/javascript' src='javascripts/user.js')
 div.row
   div.no-guter.col-md-4
-    div.roundedBoxNoPos.vh87.padme.scrollable.userList
+    div.row.roundedBoxNoPos.vh87.padme.scrollable
+      h4 User List
+      hr
+      div.userList
   div.no-guter.col-md-8
     div.roundedBoxNoPos.vh87.padme.scrollable 
       form(name="updateuser", method="post", 
@@ -9,6 +12,7 @@ div.row
         h4.float-left Manage Users
         button.float-right(type="submit",id="btnUserUpdate").btn.btn-success Add/Update
         button.float-right(type="reset",id="btnClear",style="margin-right:10px").btn.btn-warning Clear
+        i.float-right(style="margin-right:20px") click a name on the left to update it or clear the form to enter new users
         div.clear
         hr
         div.userPanel

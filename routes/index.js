@@ -78,49 +78,41 @@ router.get('/getProducts/:option?/:page?/:bar?/:criteria?/:force?',function(req,
   var query;
   if(username){ //&& (priv == "Admin" || priv == "Manager")
     db.serialize(function(){
+      query = "SELECT PRODUCT_ID,PRODUCT_BARCODE_SKU, PRODUCT_NAME, CATEGORY_NAME, PRICE,"
+      + " P.CATEGORY_ID FROM PRODUCT P JOIN CATEGORY C ON"
+      + " P.CATEGORY_ID=C.CATEGORY_ID WHERE";
+      var param = {};
       if(filter){
-        var param = {$filter:filter};
+        param = {$filter:filter};
         if(!isNaN(filter)){
           //checking id's
           if(forceid){
             //checking exact id's
-            query = "SELECT PRODUCT_ID,PRODUCT_BARCODE_SKU, PRODUCT_NAME, CATEGORY_NAME, PRICE,"
-                + " P.CATEGORY_ID FROM PRODUCT P JOIN CATEGORY C ON"
-                + " P.CATEGORY_ID=C.CATEGORY_ID WHERE"
-                + " P.CATEGORY_ID=$filter"
-                +" AND DATE_DISCONTINUED IS NULL"
-                + " ORDER BY PRODUCT_NAME ASC";  
+            query += " P.CATEGORY_ID=$filter AND";
+                
           }else{
             //checking loose id's
-            query = "SELECT PRODUCT_ID,PRODUCT_BARCODE_SKU, PRODUCT_NAME, CATEGORY_NAME, PRICE,"
-                + " P.CATEGORY_ID FROM PRODUCT P JOIN CATEGORY C ON"
-                + " P.CATEGORY_ID=C.CATEGORY_ID WHERE"
-                + " P.CATEGORY_ID=$filter"
-                + " OR P.CATEGORY_ID IN (SELECT CATEGORY_ID FROM CATEGORY WHERE PARENT_CATEGORY_ID=$filter)"
-                +" AND DATE_DISCONTINUED IS NULL"
-                + " ORDER BY PRODUCT_NAME ASC"; 
-
+            query +=" P.CATEGORY_ID=$filter"
+                + " OR P.CATEGORY_ID IN (SELECT CATEGORY_ID FROM "
+                +"CATEGORY WHERE PARENT_CATEGORY_ID=$filter) AND";
           }
         }else{
           //matching name query
-          query = "SELECT PRODUCT_ID,PRODUCT_BARCODE_SKU, PRODUCT_NAME, CATEGORY_NAME, PRICE,"
-                + " P.CATEGORY_ID FROM PRODUCT P JOIN CATEGORY C ON"
-                + " P.CATEGORY_ID=C.CATEGORY_ID WHERE"
-                + " PRODUCT_NAME LIKE ?"
-                +" AND DATE_DISCONTINUED IS NULL"
-                + " ORDER BY PRODUCT_NAME ASC"; 
+
+          var sku = filter.match(/\d+/);
+          if(sku){
+            filter = sku[0];
+            query += " PRODUCT_BARCODE_SKU LIKE ? AND";
+                
+          }else{
+            filter = filter.split("-")[1];
+            query += " PRODUCT_NAME LIKE ? AND";
+          }
           var param = "%"+filter+"%"; 
         }
-      }else{
-        query = "SELECT PRODUCT_ID,PRODUCT_BARCODE_SKU, PRODUCT_NAME, CATEGORY_NAME, PRICE,"
-        + " P.CATEGORY_ID FROM PRODUCT P JOIN CATEGORY C ON"
-        + " P.CATEGORY_ID=C.CATEGORY_ID WHERE DATE_DISCONTINUED IS NULL"
-        + " ORDER BY PRODUCT_NAME ASC";
-        var param = {};
       }
+      query +=" DATE_DISCONTINUED IS NULL ORDER BY PRODUCT_NAME ASC";  
       var stmt = db.prepare(query);
-      //console.log(param)
-      //console.log(query)
       stmt.each(param,function(err,row){
         if(err){
           console.log(err);
@@ -202,15 +194,16 @@ router.get('/getSales/:num/:year/:month?/:day?',function(req,res,next){
                 + "S.EMPlOYEE_NUMBER=E.EMPLOYEE_NUMBER WHERE ";
       }
       if(day && month && year){//if there is a day, eveverything else assumed to exist
-        query += "strftime('%Y-%m-%d',DATETIME_SOLD)=? ORDER BY DATETIME_SOLD ASC";
+        query += "strftime('%Y-%m-%d',DATETIME_SOLD)=?";
         params = year+"-"+month+"-"+day;
       }else if(month && year){//otherwise
-        query += "strftime('%Y-%m',DATETIME_SOLD)=? ORDER BY DATETIME_SOLD ASC";
+        query += "strftime('%Y-%m',DATETIME_SOLD)=?";
         params = year+"-"+month;
       }else{
-        query += "strftime('%Y',DATETIME_SOLD)=? ORDER BY DATETIME_SOLD ASC";
+        query += "strftime('%Y',DATETIME_SOLD)=?";
         params = year;
       }
+      query += "  ORDER BY DATETIME_SOLD DESC";
       var stmt = db.prepare(query);
       console.log(params)
       stmt.each(params,function(err,row){
@@ -229,7 +222,7 @@ router.get('/getSales/:num/:year/:month?/:day?',function(req,res,next){
             }
             rows.push(r);
           }else{
-            rows = {"sum":row["SUM(TOTAL_SUM)"]/100,"tax":row["SUM(TAX)"]/100,"quant":row["SUM(ITEM_TOTAL)"/100]};
+            rows = {"sum":row["SUM(TOTAL_SUM)"]/100,"tax":row["SUM(TAX)"]/100,"quant":row["SUM(ITEM_TOTAL)"]};
           }
         }
       },function(err){
@@ -416,7 +409,7 @@ router.post('/checkout',function(req,res,next){
   var priv = req.session.privledge;
   var data = req.body;
   //console.log(data);
-  if(username && (priv == "Admin" || priv == "Manager")){
+  if(username){
     var subtotal = 0;
     var itemsSold = 0;
     var queryTransaction = [];

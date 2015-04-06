@@ -76,8 +76,8 @@ $(function(){
     });
   }
   loadingSpinner();
-  //getMainLayout();
-  getSalesLayout();
+  getMainLayout();
+  //getSalesLayout();
   //getUsersLayout();
   //getProductLayout();
 

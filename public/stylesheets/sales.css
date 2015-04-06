@@ -6,7 +6,7 @@
 }
 
 .box__header {
-  padding: 15px 25px;
+  padding: 13px 13px;
   position: relative;
 }
 
@@ -24,7 +24,7 @@
 .stats {
   color: #fff;
   position: relative;
-  padding-bottom: 25px;
+  padding-bottom: 18px;
 }
 
 .stats__amount {

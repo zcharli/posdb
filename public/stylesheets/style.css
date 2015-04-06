@@ -352,8 +352,8 @@ a {
           transition: all 0.3s ease;
 }
 
-#tblProduct tr:hover{
-  cursor:hand;
+table tr:hover{
+  cursor:pointer;
 }
 
 #mainHr{
@@ -368,4 +368,31 @@ a {
 .datepicker.datepicker-inline {
   display:block !important;
   width:100% !important;
+}
+
+.cat-button{
+  background: rgba(50.2, 10.2, 8.2);
+}
+.cat-button {
+  border: 0;
+  background: rgba(128, 26, 21,0.8);
+  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.4);
+  color: white;
+  letter-spacing: 2px;
+  overflow: hidden;
+  height:75px;
+  white-space: normal;
+  padding: 15px 15px;
+  position: relative;
+  text-transform: uppercase;
+  -webkit-transition: all 0.3s ease;
+          transition: all 0.3s ease;
+  width: 100%;
+}
+.resultButton:hover{
+  background-color: #1b1b1b;
+  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
+}
+.resultButton:hover {
+  border-width: 0 0 0 0 !important;
 }
