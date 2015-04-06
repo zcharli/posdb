@@ -643,7 +643,7 @@ router.post('/delete/:table', function(req, res, next) {
 
 router.post('/signin', function(req, res, next) {
   var username = req.body.username;
-  var pass = sha1sum(req.body.password);
+  var pass = req.body.password;
   // test password
   //then
   if(!username || !pass){
@@ -656,7 +656,7 @@ router.post('/signin', function(req, res, next) {
         + "J.JOB_TITLE_NAME FROM EMPLOYEE E JOIN JOB_TITLE J ON "
         + "J.JOB_TITLE_ID=E.JOB_TITLE_ID WHERE EMPLOYEE_NUMBER=$id "
         + "AND PASSWORD=$password");
-      var param = {$id:user_id, $password:pass};
+      var param = {$id:user_id, $password:sha1sum(pass)};
       //console.log(pass)
       stmt.each(param,function(err,row){
         if(err){
