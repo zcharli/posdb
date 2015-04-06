@@ -370,9 +370,6 @@ table tr:hover{
   width:100% !important;
 }
 
-.cat-button{
-  background: rgba(50.2, 10.2, 8.2);
-}
 .cat-button {
   border: 0;
   background: rgba(128, 26, 21,0.8);
@@ -390,7 +387,7 @@ table tr:hover{
   width: 100%;
 }
 .cat-button:hover{
-  background-color: rgba(176, 50, 50,0.8);
+  background-color: rgba(176, 50, 50,0.8);;
   box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
 }
 .cat-button:hover {
