@@ -19,6 +19,3 @@ npm install connect-sqlite3
 
 
 
-### What is this repository for? ###
-
-There is a 
