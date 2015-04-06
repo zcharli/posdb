@@ -74,7 +74,7 @@ $(function(){
         url: '/delete/product',
         data: {'id': $('#prod_id').val()},
         success: function(res) {
-          console.log(res);
+          //console.log(res);
           if (res['data'] == 'successful') {
             $.get("/getProducts",function(data){
               $('#updateModal').modal('toggle');
@@ -99,9 +99,9 @@ $(function(){
       }).on('shown.bs.modal',function(e){ 
         var row = $(e.relatedTarget).data();
         $('#btnDeleteProd').attr('disabled','disabled');
-        console.log(row)
+        //console.log(row)
         if(row){//on update, else its on insert
-          //console.log(row)
+          ////console.log(row)
           if(row['id']){
             $('#btnDeleteProd').removeAttr('disabled','disabled');
           }
@@ -140,7 +140,7 @@ $(function(){
                  'category_id': $('#cat_name').val(),
                  'sku': $('#p_sku').val()},
           success: function(res) {
-            console.log(res);
+            //console.log(res);
             if (res['data'] == 'successful') {
               // window.location=('thanks.php');
               alert("Add was successful, you may continue.");

@@ -43,7 +43,7 @@ $(function(){
     if(!val){
       getProductPane();
     }else{
-      console.log("get")
+      //console.log("get")
       $.get("/getProducts/"+numBtn+"/"+currPage+"/bar/"+"s-"+$("#search_me").val(),function(data){
         $(".productList").empty();
         $(".productList").append(data);
@@ -134,7 +134,7 @@ $(function(){
       if(cart[i]['id'] == id){
         cart[i]['quantity'] += 1;
         q = cart[i]['quantity'];
-        //console.log("q " + q)
+        ////console.log("q " + q)
         break;
       }
     }
@@ -153,7 +153,7 @@ $(function(){
 
   var addToCart = function(c){
     var quantity = checkQuantity(c);
-    //console.log(quantity)
+    ////console.log(quantity)
     if(quantity == 0){
       table.append(item.compose({
         'sku':c['sku'],
@@ -209,7 +209,7 @@ $(function(){
     var items = 0;
 
     for(var i = 0;i<cart.length;++i){
-      //console.log(cart[i]['price'] +" with "+cart[i]['quantity'])
+      ////console.log(cart[i]['price'] +" with "+cart[i]['quantity'])
       subtotal += cart[i]['price']*cart[i]['quantity'];
       items += cart[i]['quantity'];
         
@@ -253,7 +253,7 @@ $(function(){
         }
       });
       $("#prevPage").click(function(){
-        console.log(currPage)
+        //console.log(currPage)
         if(currPage - 1 >= 0){
           currPage--;
           $.get("/getProducts/"+numBtn+"/"+currPage+"/bar",function(data){
@@ -266,8 +266,8 @@ $(function(){
     });
   }
   var numBtn = Math.floor((vHeight - 120 - 75)/75);
-  //console.log(Math.floor((vHeight - 120)/75))
-  //console.log(numCategory)
+  ////console.log(Math.floor((vHeight - 120)/75))
+  ////console.log(numCategory)
 
   getCategoryPane();
   getProductPane();
@@ -292,8 +292,8 @@ $(function(){
       });
       $("#btnFinalize").unbind().bind('click',function(){
         e.preventDefault();
-        //console.log(JSON.stringify(cart))
-        console.log("ajax finalize !")
+        ////console.log(JSON.stringify(cart))
+        //console.log("ajax finalize !")
         if(cart.length > 0){
           $.ajax({
             type: 'POST',
@@ -302,7 +302,7 @@ $(function(){
             dataType: "json",
             contentType: "application/json; charset=utf-8",
             success: function(res) {
-              console.log(res);
+              //console.log(res);
               if (res['data'] == 'successful') {
                 $("#c_change").text("");
                 $("#c_tender").val("");

@@ -115,7 +115,7 @@ router.get('/getProducts/:option?/:page?/:bar?/:criteria?/:force?',function(req,
       var stmt = db.prepare(query);
       stmt.each(param,function(err,row){
         if(err){
-          console.log(err);
+          //console.log(err);
           //res.json({'data':'failure'});
         }else{
           var r = [];
@@ -130,9 +130,9 @@ router.get('/getProducts/:option?/:page?/:bar?/:criteria?/:force?',function(req,
         }
       },function(err){
         if(err){
-          console.log(err)
+          //console.log(err)
         }else{
-          console.log(this)
+          //console.log(this)
         }
         if(option){
           var showBar = true;
@@ -148,7 +148,7 @@ router.get('/getProducts/:option?/:page?/:bar?/:criteria?/:force?',function(req,
           end = rows.length;
           start = start+page*maxProd;
           if(end - maxProd > 0){
-            console.log(maxProd)
+            //console.log(maxProd)
             pageEnd = maxProd;
             rows = rows.splice(start,
                                 maxProd+page*maxProd);
@@ -156,7 +156,7 @@ router.get('/getProducts/:option?/:page?/:bar?/:criteria?/:force?',function(req,
             pageEnd = end;
             rows = rows.splice(start,end);
           }
-          console.log("setting max page:"+maxPage+ " from "+totalRows/maxProd)
+          //console.log("setting max page:"+maxPage+ " from "+totalRows/maxProd)
           res.header("Cache-Control", "no-cache, no-store");
           res.header("Pragma", "no-cache");
           res.header("Expires", 0);
@@ -205,10 +205,10 @@ router.get('/getSales/:num/:year/:month?/:day?',function(req,res,next){
       }
       query += "  ORDER BY DATETIME_SOLD DESC";
       var stmt = db.prepare(query);
-      console.log(params)
+      //console.log(params)
       stmt.each(params,function(err,row){
         if(err){
-          console.log(err);
+          //console.log(err);
           //res.json({'data':'failure'});
         }else{
           if(num==0){
@@ -227,14 +227,14 @@ router.get('/getSales/:num/:year/:month?/:day?',function(req,res,next){
         }
       },function(err){
           if(err){
-            console.log(er)
+            //console.log(er)
           }else{
-            console.log(this)
+            //console.log(this)
           }
           if(num==0){
             res.render('partials/sales_table',{rows:rows});
           }else{
-            console.log(rows)
+            //console.log(rows)
             res.send(rows);
           }
       });
@@ -259,10 +259,10 @@ router.get('/getSalesDetails/:id',function(req,res,next){
         + "WHERE SALE_TRANSACTION_ID=$id ORDER BY QUANTITY_BOUGHT DESC";
       var param = {$id:Number(id)};
       var stmt = db.prepare(query);
-      console.log(param)
+      //console.log(param)
       stmt.each(param,function(err,row){
         if(err){
-          console.log(err);
+          //console.log(err);
         }else{
           var r = [];
           var price = 0;
@@ -277,10 +277,10 @@ router.get('/getSalesDetails/:id',function(req,res,next){
         }
       },function(err){
           if(err){
-            console.log(er)
+            //console.log(er)
           }else{
-            console.log(this)
-            console.log(rows)
+            //console.log(this)
+            //console.log(rows)
           }
           res.render('partials/sale_details',{rows:rows});
       });
@@ -295,7 +295,7 @@ router.post('/update',function(req,res,next){
   var username = req.session.username;
   var priv = req.session.privledge;
   var data = req.body; //id, name,price,category_id,sku
-  //console.log(data);
+  ////console.log(data);
   if(username && (priv == "Admin" || priv == "Manager")){
     db.serialize(function(){
       if(data.id == ""){
@@ -312,11 +312,11 @@ router.post('/update',function(req,res,next){
 
       stmt.run(param,function(err){
         if(err){
-          console.log(err);
+          //console.log(err);
           res.json({'data':'failure'});
         }else{
           res.json({'data':'successful'});
-          console.log(this);
+          //console.log(this);
         }
       });
       stmt.finalize();
@@ -330,7 +330,7 @@ router.post('/updateuser',function(req,res,next){
   var username = req.session.username;
   var priv = req.session.privledge;
   var data = req.body;
-  console.log(data);
+  //console.log(data);
   if(username && (priv == "Admin" || priv == "Manager")){
     var lastAddrId = 0;
     db.serialize(function(){
@@ -350,23 +350,23 @@ router.post('/updateuser',function(req,res,next){
           $suit_num:data.suit_num,$suffix:data.suffix,$city:data.city,$prov:data.prov,
           $addrid:data.addrid,};
       }
-      console.log(stmt)
+      //console.log(stmt)
       stmt.run(paramsAddr,function(err){
         if(err){
-          console.log(err + " in address insert");
+          //console.log(err + " in address insert");
           res.json({'data':'failure'});
         }else{
           //res.json({'data':'successful'});
-          console.log(this);
+          //console.log(this);
           lastAddrId = this.lastID;
         }
       },function(err){
         if(err){
-          console.log(err);
+          //console.log(err);
           res.json({'data':'failure'});
         }else{
           //res.json({'data':'successful'});
-          console.log(this);
+          //console.log(this);
           lastAddrId = this.lastID;
           if(data.user_id == ""){
             var stmt2 = db.prepare("INSERT INTO EMPLOYEE (PASSWORD,EMPlOYEE_NUMBER, "
@@ -384,14 +384,14 @@ router.post('/updateuser',function(req,res,next){
               $fname:data.fname,$lname:data.lname,$emp:data.user_id,$password:sha1sum(data.password),
               $wage:data.wage,$sin:data.sin,$job_id:data.job_title};
           }
-          console.log(stmt2)
+          //console.log(stmt2)
           stmt2.run(paramEmp,function(err){
             if(err){
-              console.log(err + " in employee insert");
+              //console.log(err + " in employee insert");
               res.json({'data':'failure'});
             }else{
               res.json({'data':'successful','id':this.lastID,'change':this.changes});
-              console.log(this);
+              //console.log(this);
             }
           });
           stmt2.finalize();
@@ -408,7 +408,7 @@ router.post('/checkout',function(req,res,next){
   var username = req.session.username;
   var priv = req.session.privledge;
   var data = req.body;
-  //console.log(data);
+  ////console.log(data);
   if(username){
     var subtotal = 0;
     var itemsSold = 0;
@@ -426,25 +426,25 @@ router.post('/checkout',function(req,res,next){
         $tax:((subtotal*0.13).toFixed(2))*100,$sum:((subtotal*1.13).toFixed(2))*100};
       var stmt = db.prepare(query);
       stmt.run(params,function(err){
-        console.log("running transaction insert")
+        //console.log("running transaction insert")
         if(err){
-          console.log(err)
-          console.log("sending failure transaction")
+          //console.log(err)
+          //console.log("sending failure transaction")
 
           res.json({'data':'failure'});
         }else{
           lastTransId = this.lastID;
         }
-        console.log(this);
+        //console.log(this);
       },function(err){
         if(err){
-          console.log(err)
-          console.log("sending failure after transaction")
+          //console.log(err)
+          //console.log("sending failure after transaction")
 
           res.json({'data':'failure'});
         }
         lastTransId = this.lastID;
-        console.log(lastTransId)
+        //console.log(lastTransId)
         var query2 = "INSERT INTO SALE_DETAILS (SALE_TRANSACTION_ID,"
           + "PRODUCT_ID,DISCOUNTED,FINAL_PRICE,QUANTITY_BOUGHT) VALUES "
           + "($tranId,$pid,0,$price,$quant)";
@@ -454,25 +454,25 @@ router.post('/checkout',function(req,res,next){
           var params2 = {$tranId:lastTransId,$pid:data[i].id,$price:Number(data[i].price*100),
             $quant:data[i].quantity};
           stmt2.run(params2,function(err){
-          console.log("running sale detail insert")
+          //console.log("running sale detail insert")
             if(err){
-              console.log(err)
-              console.log("sending failure detail")
+              //console.log(err)
+              //console.log("sending failure detail")
               res.json({'data':'failure'});
             }
-            console.log(this)
+            //console.log(this)
           },function(){
-            console.log("detail query finished")
+            //console.log("detail query finished")
             queryCount++;
             if(queryCount == data.length){
-              console.log("sending success at" + query)
+              //console.log("sending success at" + query)
               res.json({'data':'successful'});
             }
           });
         }
         stmt2.finalize();
-        console.log(this)
-        //console.log("sending success")
+        //console.log(this)
+        ////console.log("sending success")
         //res.json({'data':'successful'});
       });
       stmt.finalize();
@@ -486,7 +486,7 @@ router.post('/update_cat',function(req,res,next){
   var username = req.session.username;
   var priv = req.session.privledge;
   var data = req.body; //id, name,parent
-  //console.log(data);
+  ////console.log(data);
   if(username && (priv == "Admin" || priv == "Manager")){
     db.serialize(function(){
       if(data.id == ""){
@@ -500,11 +500,11 @@ router.post('/update_cat',function(req,res,next){
       }
       stmt.run(param,function(err){
         if(err){
-          console.log(err);
+          //console.log(err);
           res.json({'data':'failure'});
         }else{
           res.json({'data':'successful'});
-          console.log(this);
+          //console.log(this);
         }
       });
       stmt.finalize();
@@ -557,7 +557,7 @@ router.get('/getCategories/:option?/:format?', function(req, res, next) {
             }
           }
         }
-        console.log(heirarchy)
+        //console.log(heirarchy)
         if(format){
           tempCatNum = rows.length;
           res.render('partials/category_select',{rows:heirarchy});
@@ -598,11 +598,11 @@ router.get('/getUsers/:option?', function(req, res, next) {
         rows.push(r);
       },function(err){
         if(err){
-          console.log(err)
+          //console.log(err)
         }else{
-          console.log(this);
+          //console.log(this);
         }
-        //console.log(rows);
+        ////console.log(rows);
         if(option){
           res.render('partials/jobtitle',{rows:rows});
         }else{
@@ -627,11 +627,11 @@ router.post('/delete/:table', function(req, res, next) {
       var param = {$id:data.id};
       stmt.run(param,function(err){
         if(err){
-          console.log(err);
+          //console.log(err);
           res.json({'data':'failure'});
         }else{
           res.json({'data':'successful'});
-          console.log(this);
+          //console.log(this);
         }
       });
       stmt.finalize();
@@ -650,27 +650,27 @@ router.post('/signin', function(req, res, next) {
     res.render('login', { error:"Login unsuccessful" });
   }else{
     var user_id = username.match(/\d+/)[0];
-    console.log(user_id)
+    //console.log(user_id)
     db.serialize(function(){
       var stmt = db.prepare("SELECT FNAME,LNAME,"
         + "J.JOB_TITLE_NAME FROM EMPLOYEE E JOIN JOB_TITLE J ON "
         + "J.JOB_TITLE_ID=E.JOB_TITLE_ID WHERE EMPLOYEE_NUMBER=$id "
         + "AND PASSWORD=$password");
       var param = {$id:user_id, $password:pass};
-      console.log(pass)
+      //console.log(pass)
       stmt.each(param,function(err,row){
         if(err){
-          console.log(err);
+          //console.log(err);
           res.render('login', { error:"Login unsuccessful" });
         }else{
-          console.log(this);
-          console.log(row)
+          //console.log(this);
+          //console.log(row)
           if(row){
             req.session.username = row.fname+" "+row.lname;
             req.session.user_id = user_id;
             req.session.privledge = row.job_title_name;
             res.redirect("/");
-            console.log(this);
+            //console.log(this);
           }else{
             res.render('login', { error:"Login unsuccessful" });
           }

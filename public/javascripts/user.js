@@ -69,7 +69,7 @@ $(document).ready(function () {
       //alert("The form is not completed correctly");
     } else {
       e.preventDefault();
-      //console.log(JSON.stringify($('form').serializeObject()))
+      ////console.log(JSON.stringify($('form').serializeObject()))
       $.ajax({
         type: 'POST',
         url: '/updateuser',
@@ -77,7 +77,7 @@ $(document).ready(function () {
         dataType: "json",
         contentType: "application/json; charset=utf-8",
         success: function(res) {
-          console.log(res);
+          //console.log(res);
           if (res['data'] == 'successful') {
             getUsers();
             var message = "";

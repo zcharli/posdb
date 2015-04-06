@@ -6,7 +6,7 @@ $(function(){
   });
   //set nav bar active
   $('.nav li').click(function(){
-    //console.log("yes");
+    ////console.log("yes");
     $('.nav li').removeClass('active');
     $(this).addClass('active');
   });

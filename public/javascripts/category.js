@@ -11,7 +11,7 @@ $(document).ready(function () {
                'name': $('#cat_detail').val(),
                'parent': $('#cat_parent').val()},
         success: function(res) {
-          console.log(res);
+          //console.log(res);
           if (res['data'] == 'successful') {
             alert("Add was successful, you may continue adding");
             $('#cat_id').val("");

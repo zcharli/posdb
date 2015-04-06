@@ -35,7 +35,7 @@ $(document).ready(function() {
   }
 
   var populateDetails = function(data) {
-    console.log(data)
+    //console.log(data)
     $(".pnlSaleDetails").empty();
     $(".pnlSaleDetails").append(data);
   }
@@ -47,7 +47,7 @@ $(document).ready(function() {
       currYear = split[0];
       currMonth = split[1];
       currDate = split[2];
-      console.log(currMonth)
+      //console.log(currMonth)
       getSales(0,currYear,currMonth,currDate);
       getSales(1,currYear,currMonth,currDate);
       changeNotifier(currYear,currMonth,currDate)
@@ -55,7 +55,7 @@ $(document).ready(function() {
 
   $(dp).datepicker().on('changeMonth', function(e){ 
       currMonth = new Date(e.date).getMonth() + 1;
-      console.log("month")
+      //console.log("month")
       getSales(0,currYear,currMonth);
       getSales(1,currYear,currMonth);
       changeNotifier(currYear,currMonth)
@@ -63,7 +63,7 @@ $(document).ready(function() {
 
   $(dp).datepicker().on('changeYear', function(e){
       currYear = String(e.date).split(" ")[3];
-      console.log("year")
+      //console.log("year")
       getSales(0,currYear);
       getSales(1,currYear);
       changeNotifier(currYear)
@@ -107,7 +107,7 @@ $(document).ready(function() {
         saleTable.append(data);
         addSalesHandler();
       }else{
-        console.log(data)
+        //console.log(data)
         $("#s_today").text("$"+data.sum);
         $("#s_month").text("$"+data.tax);
         if(!data.quant){
