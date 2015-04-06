@@ -15,6 +15,7 @@ nav.navbar.navbar-fixed-top.navbar-inverse
         - if(privledge == "Admin" || privledge == "Manager")
           li
             a(href='#',class='goUsers') Manage Users
+        - if(privledge == "Admin" || privledge == "Manager" || privledge == "Accountant" )
           li
             a(href='#',class='goSales') Sales
         li 

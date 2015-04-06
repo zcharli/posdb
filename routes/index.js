@@ -184,7 +184,7 @@ router.get('/getSales/:num/:year/:month?/:day?',function(req,res,next){
   var rows = [];
   var query;
   var params;
-  if(username && priv == "Admin" || priv == "Manager"){
+  if(username && priv == "Admin" || priv == "Manager" || priv == "Accountant"){
     db.serialize(function(){
       if(num==1){
         query = "SELECT SUM(TOTAL_SUM),SUM(TAX),SUM(ITEM_TOTAL) FROM SALE_TRANSACTION WHERE ";
@@ -203,7 +203,7 @@ router.get('/getSales/:num/:year/:month?/:day?',function(req,res,next){
         query += "strftime('%Y',DATETIME_SOLD)=?";
         params = year;
       }
-      query += "  ORDER BY DATETIME_SOLD DESC";
+      query += "  ORDER BY DATETIME_SOLD ASC";
       var stmt = db.prepare(query);
       console.log(params)
       stmt.each(params,function(err,row){
@@ -251,7 +251,7 @@ router.get('/getSalesDetails/:id',function(req,res,next){
   var id = req.params.id;
   var rows = [];
   var query;
-  if(username && priv == "Admin" || priv == "Manager"){
+  if(username && priv == "Admin" || priv == "Manager" || priv == "Accountant"){
     db.serialize(function(){
       query = "SELECT PRODUCT_NAME,PRODUCT_BARCODE_SKU,CATEGORY_NAME,"
         + "FINAL_PRICE,QUANTITY_BOUGHT FROM SALE_DETAILS S JOIN PRODUCT P ON "

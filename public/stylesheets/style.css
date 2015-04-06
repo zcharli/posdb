@@ -389,10 +389,10 @@ table tr:hover{
           transition: all 0.3s ease;
   width: 100%;
 }
-.resultButton:hover{
-  background-color: #1b1b1b;
+.cat-button:hover{
+  background-color: rgba(176, 50, 50,0.8);
   box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
 }
-.resultButton:hover {
+.cat-button:hover {
   border-width: 0 0 0 0 !important;
 }
