@@ -40,6 +40,7 @@ Now browse to *localhost:3000* to play with the app
 If there is any issues when starting, try to npm install <missing dependency>
 
 Accounts you may play with:
+
 |username |  password  | role								 |
 |---------|------------|-------------------------------------|
 |charlie1 |  password  | admin (super user) - prefered login |
