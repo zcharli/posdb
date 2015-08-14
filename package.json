@@ -12,6 +12,9 @@
     "express": "~4.11.0",
     "jade": "~1.9.0",
     "morgan": "~1.5.1",
-    "serve-favicon": "~2.2.0"
+    "serve-favicon": "~2.2.0",
+    "express-session":"1.10.4",
+    "sqlite3":"3.0.5",
+    "connect-sqlite3":"0.9.5"
   }
 }
