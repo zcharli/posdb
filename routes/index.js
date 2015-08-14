@@ -649,7 +649,12 @@ router.post('/signin', function(req, res, next) {
   if(!username || !pass){
     res.render('login', { error:"Login unsuccessful" });
   }else{
-    var user_id = username.match(/\d+/)[0];
+    var user_id = username.match(/\d+/);
+    if(user_id){
+      user_id = user_id[0];
+    }else{
+      res.render('login', { error:"Login unsuccessful" });
+    }
     //console.log(user_id)
     db.serialize(function(){
       var stmt = db.prepare("SELECT FNAME,LNAME,"

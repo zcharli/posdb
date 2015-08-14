@@ -26,9 +26,12 @@ Extract the zip file with project in it, open up a terminal or powershell
 `npm install`
 
 *If anything goes wrong* here are some additional command you can use with out harm:
-```npm install sqlit3
-npm install connect-sqlite3
-npm install express-session```
+
+`npm install sqlit3`
+
+`npm install connect-sqlite3`
+
+`npm install express-session`
 
 This should be the command neccessary to download the dependencies for the proj:
 
