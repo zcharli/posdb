@@ -27,7 +27,7 @@ Extract the zip file with project in it, open up a terminal or powershell
 
 *If anything goes wrong* here are some additional command you can use with out harm:
 
-`npm install sqlit3`
+`npm install sqlite3`
 
 `npm install connect-sqlite3`
 
