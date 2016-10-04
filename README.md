@@ -1,8 +1,6 @@
 # POSDB
 ###### Ziqiao Charlie Li - 100832679
 
-[![PosDB Demo](http://img.youtube.com/vi/3PyVSeU-JiE/0.jpg)](http://www.youtube.com/watch?v=3PyVSeU-JiE)
-
 Thanks for taking the chance to view my Node POS program made for my database 
 project in COMP 3005 at Carleton University for the winter semester of 2014 
 (in 2015). This read me is meant to help you get the project up and running. 
