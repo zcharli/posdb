@@ -18,10 +18,11 @@ Go ahead and download this project [here](/zcharli/posdb/archive/master.zip)
 
 #### Dependencies:
 Internet connection 
-Node.js installed
+Node.js 0.10.x
+
 Run the following commands:
 
-Extract the zip file with project in it, open up a terminal or powershell
+Extract the zip file with project in it or git clone this repository, open up a terminal or powershell
 `cd posdb`
 `npm install`
 
