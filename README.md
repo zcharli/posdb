@@ -26,7 +26,7 @@ Extract the zip file with project in it or git clone this repository, open up a 
 `cd posdb`
 `npm install`
 
-*If anything goes wrong* here are some additional command you can use with out harm:
+*If anything goes wrong* here are some additional commands you can use without harm:
 
 `npm install sqlite3`
 
@@ -41,7 +41,7 @@ To start:
 
 Now browse to *localhost:3000* to play with the app
 
-If there is any issues when starting, try to npm install <missing dependency>
+If there are any issues when starting, try to npm install <missing dependency>
 
 Accounts you may play with:
 
@@ -52,5 +52,5 @@ Accounts you may play with:
 |john2    |  password  | manager							 |
 |sally4   |  password  | accountant - only sales data        |
 
-To update data, usually clicking the the row of data you want to update will 
+To update data, usually clicking the row of data you want to update will 
 spawn a pop up for you to edit
