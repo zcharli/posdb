@@ -59,3 +59,21 @@ Accounts you may play with:
 
 To update data, usually clicking the the row of data you want to update will
 spawn a pop up for you to edit
+
+## Running with Docker
+The application can also be deployed to port 80 as a docker application. The only
+requirement is that the host machine is internet connected and has `docker` installed.
+
+To run with docker, execute the following commands:
+
+```
+docker build -t posdb .
+docker run -p 3000:80 posdb
+```
+
+This will make the web app accessible on `http://localhost:3000`. If you would like
+to expose the app on port 80, change the second command to:
+
+```
+docker run -p 80:80 posdb
+```
