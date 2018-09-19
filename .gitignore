@@ -51,3 +51,7 @@ jspm_packages/
 
 # dotenv environment variables file
 .env
+
+# IntelliJ project
+.idea
+posdb.iml
