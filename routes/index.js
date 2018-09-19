@@ -1,41 +1,55 @@
 var express = require('express');
-var router = express.Router();
+var router  = express.Router();
 var sqlite3 = require('sqlite3').verbose();
-var crypto = require('crypto')
-var db = new sqlite3.Database('data/posdb');
-var sha1sum = function(input){
+var crypto  = require('crypto');
+var db      = new sqlite3.Database('data/posdb');
+var sha1sum = function(input) {
+
   return crypto.createHash('sha1').update(input.toString()).digest('hex')
-}
+};
+
 var tempCatNum = 0;
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  var username = req.session.username;
+
+  var username  = req.session.username;
   var privledge = req.session.privledge;
-  if(username){
+
+  if (username) {
     res.render('index', { user: username,
                           user: username,
                           privledge: privledge});
-  }else{
+  } else {
+
     res.render('login', { user: username });
   }
 });
 
 router.get('/main', function(req, res, next) {
+
   var username = req.session.username;
 
   if(username){
 
     res.render('partials/main');
-  }else{
+
+  } else {
+
     res.render('login', { user: username });
   }
 });
 
 router.get('/goproduct', function(req, res, next) {
+
   var username = req.session.username;
-  if(username){
+
+  if (username) {
+
     res.render('partials/product');
-  }else{
+
+  } else {
+
     res.render('login', { user: username });
   }
 });
@@ -576,60 +590,87 @@ router.get('/getCategories/:option?/:format?', function(req, res, next) {
 });
 
 router.get('/getUsers/:option?', function(req, res, next) {
+
   var username = req.session.username;
-  var priv = req.session.privledge;
-  var rows = [];
-  var option = req.params.option;
+  var priv     = req.session.privledge;
+  var rows     = [];
+  var option   = req.params.option;
   var query;
+
   if(username && (priv == "Admin" || priv == "Manager")){
+
     if(option){
+
       query = "SELECT * FROM JOB_TITLE ORDER BY JOB_TITLE_NAME DESC";
-    }else{
+
+    } else {
       query = "SELECT EMPlOYEE_NUMBER,FNAME,LNAME,HOURLY_WAGE,SOCIAL_INSURANCE,"+
       "E.JOB_TITLE_ID,E.ADDRESS_ID,J.JOB_TITLE_NAME,STREET_NUMBER,STREET_NAME,"+
       "STREET_SUFFIX,SUITE_NUMBER,CITY,PROVINCE,POSTAL_CODE FROM EMPlOYEE E "+
       "JOIN JOB_TITLE J ON E.JOB_TITLE_ID=J.JOB_TITLE_ID JOIN ADDRESS A ON "+
       "E.ADDRESS_ID=A.ADDRESS_ID ORDER BY FNAME DESC;";
     }
-    db.serialize(function(){
-      db.each(query,function(err,row){
+
+    db.serialize(function() {
+
+      db.each(query,function(err,row) {
+
         var r = [];
-        for(var i in row) {r.push(row[i]);}
+
+        for(var i in row) {
+
+          r.push(row[i]);
+        }
         rows.push(r);
+
       },function(err){
-        if(err){
+
+        if(err) {
+
           //console.log(err)
-        }else{
+        } else {
           //console.log(this);
         }
         ////console.log(rows);
         if(option){
+
           res.render('partials/jobtitle',{rows:rows});
-        }else{
+
+        } else {
+
           res.render('partials/userlist',{rows:rows});
         }
       })
     });
-  }else{
+  } else {
+
     res.redirect('login');
   }
 });
 
 router.post('/delete/:table', function(req, res, next) {
+
   var username = req.session.username;
-  var priv = req.session.privledge;
-  var data = req.body;
-  var option = req.params.table;
-  if(username && (priv == "Admin" || priv == "Manager")){
+  var priv     = req.session.privledge;
+  var data     = req.body;
+  var option   = req.params.table;
+
+  if(username && (priv == "Admin" || priv == "Manager")) {
+
     var pk = option + "_id";
     db.serialize(function(){
       var stmt = db.prepare("DELETE FROM "+option+" WHERE "+pk+" = $id");
       var param = {$id:data.id};
-      stmt.run(param,function(err){
-        if(err){
+
+      stmt.run(param,function(err) {
+
+        if (err) {
+
           //console.log(err);
           res.json({'data':'failure'});
-        }else{
+
+        } else {
+
           res.json({'data':'successful'});
           //console.log(this);
         }
@@ -646,37 +687,55 @@ router.post('/signin', function(req, res, next) {
   var pass = req.body.password;
   // test password
   //then
-  if(!username || !pass){
+  if (!username || !pass) {
+
     res.render('login', { error:"Login unsuccessful" });
-  }else{
+
+  } else {
+
     var user_id = username.match(/\d+/);
-    if(user_id){
+
+    if (user_id) {
+
       user_id = user_id[0];
-    }else{
+
+    } else {
+
       res.render('login', { error:"Login unsuccessful" });
     }
+
     //console.log(user_id)
-    db.serialize(function(){
+    db.serialize(function() {
+
       var stmt = db.prepare("SELECT FNAME,LNAME,"
         + "J.JOB_TITLE_NAME FROM EMPLOYEE E JOIN JOB_TITLE J ON "
         + "J.JOB_TITLE_ID=E.JOB_TITLE_ID WHERE EMPLOYEE_NUMBER=$id "
         + "AND PASSWORD=$password");
+
       var param = {$id:user_id, $password:sha1sum(pass)};
+
       //console.log(pass)
-      stmt.each(param,function(err,row){
-        if(err){
+      stmt.each(param,function(err,row) {
+
+        if (err) {
+
           //console.log(err);
           res.render('login', { error:"Login unsuccessful" });
-        }else{
+
+        } else {
+
           //console.log(this);
           //console.log(row)
-          if(row){
+          if (row) {
+
             req.session.username = row.fname+" "+row.lname;
             req.session.user_id = user_id;
             req.session.privledge = row.job_title_name;
             res.redirect("/");
             //console.log(this);
-          }else{
+
+          } else {
+
             res.render('login', { error:"Login unsuccessful" });
           }
         }
